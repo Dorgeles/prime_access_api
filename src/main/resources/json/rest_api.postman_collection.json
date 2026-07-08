@@ -1,0 +1,576 @@
+
+{
+
+    "info": {
+        "_postman_id": "df67b7b8-9986-4f5f-836e-e0af58c8e968",
+        "name": "com_wdyapplications_prime_access",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+		{
+			"name": "mouvement",
+			"item": [
+                {
+					"name": "mouvement.create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"typeMouvement\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"latitude\": \"\", \t\t\t\"longitude\": \"\", \t\t\t\"validationDate\": \"\", \t\t\t\"personnelId\": \"\", \t\t\t\"salleId\": \"\", \t\t\t\"agentSecuriteId\": \"\" \t\t}  \t]   }"
+						},
+						"url": {
+							"raw": "{{appUrl}}/mouvement/create",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"mouvement",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+                    "name": "mouvement.update",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\", \t\t\t\"typeMouvement\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"latitude\": \"\", \t\t\t\"longitude\": \"\", \t\t\t\"validationDate\": \"\", \t\t\t\"personnelId\": \"\", \t\t\t\"salleId\": \"\", \t\t\t\"agentSecuriteId\": \"\" \t\t}  \t]   }"
+                        },
+                        "url": {
+                            "raw": "{{appUrl}}/mouvement/update",
+                            "host": [
+                                "{{appUrl}}"
+                            ],
+                            "path": [
+                                "mouvement",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                     "name": "mouvement.delete",
+                     "request": {
+                         "method": "POST",
+                         "header": [
+                             {
+                                 "key": "Content-Type",
+                                 "value": "application/json"
+                             }
+                         ],
+                         "body": {
+                             "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\" \t\t}  \t]   }"
+                         },
+                         "url": {
+                             "raw": "{{appUrl}}/mouvement/delete",
+                             "host": [
+                                 "{{appUrl}}"
+                             ],
+                             "path": [
+                                 "mouvement",
+                                 "delete"
+                             ]
+                         }
+                     },
+                     "response": []
+                 },
+                 {
+                   "name": "mouvement.getByCriteria",
+                   "request": {
+                       "method": "POST",
+                       "header": [
+                           {
+                               "key": "Content-Type",
+                               "value": "application/json"
+                           }
+                       ],
+                       "body": {
+                           "mode": "raw",
+			            "raw": "{ \t\"user\":\"1\", \t\"isSimpleLoading\":false, \t\"data\":{   \t\t\"id\": \"\", \t\t\"typeMouvement\": \"\", \t\t\"createdAt\": \"\", \t\t\"createdBy\": \"\", \t\t\"deletedAt\": \"\", \t\t\"isDeleted\": \"\", \t\t\"updatedAt\": \"\", \t\t\"updatedBy\": \"\", \t\t\"statusId\": \"\", \t\t\"latitude\": \"\", \t\t\"longitude\": \"\", \t\t\"validationDate\": \"\", \t\t\"personnelId\": \"\", \t\t\"salleId\": \"\", \t\t\"agentSecuriteId\": \"\" \t}   }"
+},
+                       "url": {
+                           "raw": "{{appUrl}}/mouvement/getByCriteria",
+                           "host": [
+                               "{{appUrl}}"
+                           ],
+                           "path": [
+                               "mouvement",
+                               "getByCriteria"
+                           ]
+                       }
+                   },
+                   "response": []
+               }
+			]
+		},
+		{
+			"name": "personnel",
+			"item": [
+                {
+					"name": "personnel.create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"nom\": \"\", \t\t\t\"prenoms\": \"\", \t\t\t\"telephone\": \"\", \t\t\t\"fonction\": \"\", \t\t\t\"contractant\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\" \t\t}  \t]   }"
+						},
+						"url": {
+							"raw": "{{appUrl}}/personnel/create",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"personnel",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+                    "name": "personnel.update",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\", \t\t\t\"nom\": \"\", \t\t\t\"prenoms\": \"\", \t\t\t\"telephone\": \"\", \t\t\t\"fonction\": \"\", \t\t\t\"contractant\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\" \t\t}  \t]   }"
+                        },
+                        "url": {
+                            "raw": "{{appUrl}}/personnel/update",
+                            "host": [
+                                "{{appUrl}}"
+                            ],
+                            "path": [
+                                "personnel",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                     "name": "personnel.delete",
+                     "request": {
+                         "method": "POST",
+                         "header": [
+                             {
+                                 "key": "Content-Type",
+                                 "value": "application/json"
+                             }
+                         ],
+                         "body": {
+                             "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\" \t\t}  \t]   }"
+                         },
+                         "url": {
+                             "raw": "{{appUrl}}/personnel/delete",
+                             "host": [
+                                 "{{appUrl}}"
+                             ],
+                             "path": [
+                                 "personnel",
+                                 "delete"
+                             ]
+                         }
+                     },
+                     "response": []
+                 },
+                 {
+                   "name": "personnel.getByCriteria",
+                   "request": {
+                       "method": "POST",
+                       "header": [
+                           {
+                               "key": "Content-Type",
+                               "value": "application/json"
+                           }
+                       ],
+                       "body": {
+                           "mode": "raw",
+			            "raw": "{ \t\"user\":\"1\", \t\"isSimpleLoading\":false, \t\"data\":{   \t\t\"id\": \"\", \t\t\"nom\": \"\", \t\t\"prenoms\": \"\", \t\t\"telephone\": \"\", \t\t\"fonction\": \"\", \t\t\"contractant\": \"\", \t\t\"createdAt\": \"\", \t\t\"createdBy\": \"\", \t\t\"deletedAt\": \"\", \t\t\"isDeleted\": \"\", \t\t\"updatedAt\": \"\", \t\t\"updatedBy\": \"\", \t\t\"statusId\": \"\" \t}   }"
+},
+                       "url": {
+                           "raw": "{{appUrl}}/personnel/getByCriteria",
+                           "host": [
+                               "{{appUrl}}"
+                           ],
+                           "path": [
+                               "personnel",
+                               "getByCriteria"
+                           ]
+                       }
+                   },
+                   "response": []
+               }
+			]
+		},
+		{
+			"name": "salle",
+			"item": [
+                {
+					"name": "salle.create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"libelle\": \"\", \t\t\t\"service\": \"\", \t\t\t\"capacite\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"siteId\": \"\" \t\t}  \t]   }"
+						},
+						"url": {
+							"raw": "{{appUrl}}/salle/create",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"salle",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+                    "name": "salle.update",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\", \t\t\t\"libelle\": \"\", \t\t\t\"service\": \"\", \t\t\t\"capacite\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"siteId\": \"\" \t\t}  \t]   }"
+                        },
+                        "url": {
+                            "raw": "{{appUrl}}/salle/update",
+                            "host": [
+                                "{{appUrl}}"
+                            ],
+                            "path": [
+                                "salle",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                     "name": "salle.delete",
+                     "request": {
+                         "method": "POST",
+                         "header": [
+                             {
+                                 "key": "Content-Type",
+                                 "value": "application/json"
+                             }
+                         ],
+                         "body": {
+                             "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\" \t\t}  \t]   }"
+                         },
+                         "url": {
+                             "raw": "{{appUrl}}/salle/delete",
+                             "host": [
+                                 "{{appUrl}}"
+                             ],
+                             "path": [
+                                 "salle",
+                                 "delete"
+                             ]
+                         }
+                     },
+                     "response": []
+                 },
+                 {
+                   "name": "salle.getByCriteria",
+                   "request": {
+                       "method": "POST",
+                       "header": [
+                           {
+                               "key": "Content-Type",
+                               "value": "application/json"
+                           }
+                       ],
+                       "body": {
+                           "mode": "raw",
+			            "raw": "{ \t\"user\":\"1\", \t\"isSimpleLoading\":false, \t\"data\":{   \t\t\"id\": \"\", \t\t\"libelle\": \"\", \t\t\"service\": \"\", \t\t\"capacite\": \"\", \t\t\"createdAt\": \"\", \t\t\"createdBy\": \"\", \t\t\"deletedAt\": \"\", \t\t\"isDeleted\": \"\", \t\t\"updatedAt\": \"\", \t\t\"updatedBy\": \"\", \t\t\"statusId\": \"\", \t\t\"siteId\": \"\" \t}   }"
+},
+                       "url": {
+                           "raw": "{{appUrl}}/salle/getByCriteria",
+                           "host": [
+                               "{{appUrl}}"
+                           ],
+                           "path": [
+                               "salle",
+                               "getByCriteria"
+                           ]
+                       }
+                   },
+                   "response": []
+               }
+			]
+		},
+		{
+			"name": "site",
+			"item": [
+                {
+					"name": "site.create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"libelle\": \"\", \t\t\t\"adresse\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"latitude\": \"\", \t\t\t\"longitude\": \"\" \t\t}  \t]   }"
+						},
+						"url": {
+							"raw": "{{appUrl}}/site/create",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"site",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+                    "name": "site.update",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\", \t\t\t\"libelle\": \"\", \t\t\t\"adresse\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\", \t\t\t\"latitude\": \"\", \t\t\t\"longitude\": \"\" \t\t}  \t]   }"
+                        },
+                        "url": {
+                            "raw": "{{appUrl}}/site/update",
+                            "host": [
+                                "{{appUrl}}"
+                            ],
+                            "path": [
+                                "site",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                     "name": "site.delete",
+                     "request": {
+                         "method": "POST",
+                         "header": [
+                             {
+                                 "key": "Content-Type",
+                                 "value": "application/json"
+                             }
+                         ],
+                         "body": {
+                             "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\" \t\t}  \t]   }"
+                         },
+                         "url": {
+                             "raw": "{{appUrl}}/site/delete",
+                             "host": [
+                                 "{{appUrl}}"
+                             ],
+                             "path": [
+                                 "site",
+                                 "delete"
+                             ]
+                         }
+                     },
+                     "response": []
+                 },
+                 {
+                   "name": "site.getByCriteria",
+                   "request": {
+                       "method": "POST",
+                       "header": [
+                           {
+                               "key": "Content-Type",
+                               "value": "application/json"
+                           }
+                       ],
+                       "body": {
+                           "mode": "raw",
+			            "raw": "{ \t\"user\":\"1\", \t\"isSimpleLoading\":false, \t\"data\":{   \t\t\"id\": \"\", \t\t\"libelle\": \"\", \t\t\"adresse\": \"\", \t\t\"createdAt\": \"\", \t\t\"createdBy\": \"\", \t\t\"deletedAt\": \"\", \t\t\"isDeleted\": \"\", \t\t\"updatedAt\": \"\", \t\t\"updatedBy\": \"\", \t\t\"statusId\": \"\", \t\t\"latitude\": \"\", \t\t\"longitude\": \"\" \t}   }"
+},
+                       "url": {
+                           "raw": "{{appUrl}}/site/getByCriteria",
+                           "host": [
+                               "{{appUrl}}"
+                           ],
+                           "path": [
+                               "site",
+                               "getByCriteria"
+                           ]
+                       }
+                   },
+                   "response": []
+               }
+			]
+		},
+		{
+			"name": "utilisateur",
+			"item": [
+                {
+					"name": "utilisateur.create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"login\": \"\", \t\t\t\"password\": \"\", \t\t\t\"role\": \"\", \t\t\t\"personnelId\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\" \t\t}  \t]   }"
+						},
+						"url": {
+							"raw": "{{appUrl}}/utilisateur/create",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"utilisateur",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+                    "name": "utilisateur.update",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\", \t\t\t\"login\": \"\", \t\t\t\"password\": \"\", \t\t\t\"role\": \"\", \t\t\t\"personnelId\": \"\", \t\t\t\"deletedAt\": \"\", \t\t\t\"statusId\": \"\" \t\t}  \t]   }"
+                        },
+                        "url": {
+                            "raw": "{{appUrl}}/utilisateur/update",
+                            "host": [
+                                "{{appUrl}}"
+                            ],
+                            "path": [
+                                "utilisateur",
+                                "update"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                     "name": "utilisateur.delete",
+                     "request": {
+                         "method": "POST",
+                         "header": [
+                             {
+                                 "key": "Content-Type",
+                                 "value": "application/json"
+                             }
+                         ],
+                         "body": {
+                             "mode": "raw",
+                            "raw": "{ \t\"user\":\"1\", \t\"datas\":[ \t\t{   \t\t\t\"id\": \"\" \t\t}  \t]   }"
+                         },
+                         "url": {
+                             "raw": "{{appUrl}}/utilisateur/delete",
+                             "host": [
+                                 "{{appUrl}}"
+                             ],
+                             "path": [
+                                 "utilisateur",
+                                 "delete"
+                             ]
+                         }
+                     },
+                     "response": []
+                 },
+                 {
+                   "name": "utilisateur.getByCriteria",
+                   "request": {
+                       "method": "POST",
+                       "header": [
+                           {
+                               "key": "Content-Type",
+                               "value": "application/json"
+                           }
+                       ],
+                       "body": {
+                           "mode": "raw",
+			            "raw": "{ \t\"user\":\"1\", \t\"isSimpleLoading\":false, \t\"data\":{   \t\t\"id\": \"\", \t\t\"login\": \"\", \t\t\"password\": \"\", \t\t\"role\": \"\", \t\t\"personnelId\": \"\", \t\t\"createdAt\": \"\", \t\t\"createdBy\": \"\", \t\t\"deletedAt\": \"\", \t\t\"isDeleted\": \"\", \t\t\"updatedAt\": \"\", \t\t\"updatedBy\": \"\", \t\t\"statusId\": \"\" \t}   }"
+},
+                       "url": {
+                           "raw": "{{appUrl}}/utilisateur/getByCriteria",
+                           "host": [
+                               "{{appUrl}}"
+                           ],
+                           "path": [
+                               "utilisateur",
+                               "getByCriteria"
+                           ]
+                       }
+                   },
+                   "response": []
+               }
+			]
+		}
+    ]
+}

@@ -1,0 +1,50 @@
+/*
+ * Created on 2018-04-14 ( Time 21:52:32 )
+ * Generator tool : Telosys Tools Generator ( version 3.0.0 )
+ * Copyright 2018 Geo. All Rights Reserved.
+ */
+
+package com.wdyapplications.prime_access.utils.enums;
+
+/**
+ * 
+ * @author dorgeddy
+ *
+ */
+ public enum FunctionalityEnum {
+ 	DEFAULT("DEFAULT"),
+
+	// MOUVEMENT
+	VIEW_MOUVEMENT("VIEW_MOUVEMENT"),	
+	CREATE_MOUVEMENT("CREATE_MOUVEMENT"),
+	UPDATE_MOUVEMENT("UPDATE_MOUVEMENT"),
+	DELETE_MOUVEMENT("DELETE_MOUVEMENT"),
+	// PERSONNEL
+	VIEW_PERSONNEL("VIEW_PERSONNEL"),	
+	CREATE_PERSONNEL("CREATE_PERSONNEL"),
+	UPDATE_PERSONNEL("UPDATE_PERSONNEL"),
+	DELETE_PERSONNEL("DELETE_PERSONNEL"),
+	// SALLE
+	VIEW_SALLE("VIEW_SALLE"),	
+	CREATE_SALLE("CREATE_SALLE"),
+	UPDATE_SALLE("UPDATE_SALLE"),
+	DELETE_SALLE("DELETE_SALLE"),
+	// SITE
+	VIEW_SITE("VIEW_SITE"),	
+	CREATE_SITE("CREATE_SITE"),
+	UPDATE_SITE("UPDATE_SITE"),
+	DELETE_SITE("DELETE_SITE"),
+	// UTILISATEUR
+	VIEW_UTILISATEUR("VIEW_UTILISATEUR"),	
+	CREATE_UTILISATEUR("CREATE_UTILISATEUR"),
+	UPDATE_UTILISATEUR("UPDATE_UTILISATEUR"),
+	DELETE_UTILISATEUR("DELETE_UTILISATEUR");
+
+	private final String value;
+ 	public String getValue() {
+ 		return value;
+ 	}
+ 	private FunctionalityEnum(String value) {
+ 		this.value = value;
+ 	}
+}

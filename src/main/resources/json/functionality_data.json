@@ -1,0 +1,126 @@
+{
+	"user": 1,
+	"datas": [
+		{
+			"code": "MOUVEMENT",
+			"name": "MOUVEMENT"
+		},
+		{
+			"code": "VIEW_MOUVEMENT",
+			"parentCode": "MOUVEMENT",
+			"name": "VIEW MOUVEMENT"
+		},
+		{
+			"code": "CREATE_MOUVEMENT",
+			"parentCode": "MOUVEMENT",
+			"name": "CREATE MOUVEMENT"
+		},
+		{
+			"code": "UPDATE_MOUVEMENT",
+			"parentCode": "MOUVEMENT",
+			"name": "UPDATE MOUVEMENT"
+		},
+		{
+			"code": "DELETE_MOUVEMENT",
+			"parentCode": "MOUVEMENT",
+			"name": "DELETE MOUVEMENT"
+		},
+		{
+			"code": "PERSONNEL",
+			"name": "PERSONNEL"
+		},
+		{
+			"code": "VIEW_PERSONNEL",
+			"parentCode": "PERSONNEL",
+			"name": "VIEW PERSONNEL"
+		},
+		{
+			"code": "CREATE_PERSONNEL",
+			"parentCode": "PERSONNEL",
+			"name": "CREATE PERSONNEL"
+		},
+		{
+			"code": "UPDATE_PERSONNEL",
+			"parentCode": "PERSONNEL",
+			"name": "UPDATE PERSONNEL"
+		},
+		{
+			"code": "DELETE_PERSONNEL",
+			"parentCode": "PERSONNEL",
+			"name": "DELETE PERSONNEL"
+		},
+		{
+			"code": "SALLE",
+			"name": "SALLE"
+		},
+		{
+			"code": "VIEW_SALLE",
+			"parentCode": "SALLE",
+			"name": "VIEW SALLE"
+		},
+		{
+			"code": "CREATE_SALLE",
+			"parentCode": "SALLE",
+			"name": "CREATE SALLE"
+		},
+		{
+			"code": "UPDATE_SALLE",
+			"parentCode": "SALLE",
+			"name": "UPDATE SALLE"
+		},
+		{
+			"code": "DELETE_SALLE",
+			"parentCode": "SALLE",
+			"name": "DELETE SALLE"
+		},
+		{
+			"code": "SITE",
+			"name": "SITE"
+		},
+		{
+			"code": "VIEW_SITE",
+			"parentCode": "SITE",
+			"name": "VIEW SITE"
+		},
+		{
+			"code": "CREATE_SITE",
+			"parentCode": "SITE",
+			"name": "CREATE SITE"
+		},
+		{
+			"code": "UPDATE_SITE",
+			"parentCode": "SITE",
+			"name": "UPDATE SITE"
+		},
+		{
+			"code": "DELETE_SITE",
+			"parentCode": "SITE",
+			"name": "DELETE SITE"
+		},
+		{
+			"code": "UTILISATEUR",
+			"name": "UTILISATEUR"
+		},
+		{
+			"code": "VIEW_UTILISATEUR",
+			"parentCode": "UTILISATEUR",
+			"name": "VIEW UTILISATEUR"
+		},
+		{
+			"code": "CREATE_UTILISATEUR",
+			"parentCode": "UTILISATEUR",
+			"name": "CREATE UTILISATEUR"
+		},
+		{
+			"code": "UPDATE_UTILISATEUR",
+			"parentCode": "UTILISATEUR",
+			"name": "UPDATE UTILISATEUR"
+		},
+		{
+			"code": "DELETE_UTILISATEUR",
+			"parentCode": "UTILISATEUR",
+			"name": "DELETE UTILISATEUR"
+		}
+
+	]
+}
