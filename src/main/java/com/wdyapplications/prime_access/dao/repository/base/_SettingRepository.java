@@ -137,7 +137,7 @@ public interface _SettingRepository {
         String req = "select e from Setting e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
         req += getWhereExpression(request, param, locale);
-                TypedQuery<Setting> query = em.createQuery(req, Setting.class);
+        TypedQuery<Setting> query = em.createQuery(req, Setting.class);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
@@ -156,10 +156,11 @@ public interface _SettingRepository {
      *
      */
     public default Long count(Request<SettingDto> request, EntityManager em, Locale locale) throws DataAccessException, Exception  {
-        String req = "select count(e.id) from Setting e where e IS NOT NULL";
+        String whereClause = "select e.id from Setting e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
-        req += getWhereExpression(request, param, locale);
-                jakarta.persistence.Query query = em.createQuery(req);
+        // ✅ Wrapper pour ignorer le group by / order by générés
+        String req = "select count(e.id) from Setting e where e.id IN (" + whereClause + ")";
+        jakarta.persistence.Query query = em.createQuery(req);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
@@ -207,7 +208,7 @@ public interface _SettingRepository {
             req += " order by e."+dto.getOrderField()+" "+dto.getOrderDirection();
         }
         else {
-            req += " group by  e.id desc";
+            req += " group by  e.id";
             req += " order by  e.id desc";
         }
         return req;

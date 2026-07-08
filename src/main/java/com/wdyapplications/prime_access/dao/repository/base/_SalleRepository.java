@@ -170,7 +170,7 @@ public interface _SalleRepository {
         String req = "select e from Salle e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
         req += getWhereExpression(request, param, locale);
-                TypedQuery<Salle> query = em.createQuery(req, Salle.class);
+        TypedQuery<Salle> query = em.createQuery(req, Salle.class);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
@@ -189,9 +189,10 @@ public interface _SalleRepository {
      *
      */
     public default Long count(Request<SalleDto> request, EntityManager em, Locale locale) throws DataAccessException, Exception  {
-        String req = "select count(e.id) from Salle e where e IS NOT NULL";
+        String whereClause = "select e.id from Salle e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
-        req += getWhereExpression(request, param, locale);
+        // ✅ Wrapper pour ignorer le group by / order by générés
+        String req = "select count(e.id) from Salle e where e.id IN (" + whereClause + ")";
                 jakarta.persistence.Query query = em.createQuery(req);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
@@ -240,7 +241,7 @@ public interface _SalleRepository {
             req += " order by e."+dto.getOrderField()+" "+dto.getOrderDirection();
         }
         else {
-            req += " group by  e.id desc";
+            req += " group by  e.id";
             req += " order by  e.id desc";
         }
         return req;

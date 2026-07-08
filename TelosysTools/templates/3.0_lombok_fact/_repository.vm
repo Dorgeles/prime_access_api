@@ -159,7 +159,8 @@ public interface _${entity.name}Repository {
     public default List<${entity.name}> getByCriteria(Request<${entity.name}Dto> request, EntityManager em, Locale locale) throws DataAccessException, Exception {
         String req = "select e from ${entity.name} e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
-        req += getWhereExpression(request, param, locale);
+        // ✅ Wrapper pour ignorer le group by / order by générés
+        String req = "select count(e.id) from MaterielOperation e where e.id IN (" + whereClause + ")";
         ##req += " order by #foreach( $field in $entity.keyAttributes )e.$field.name#end desc";
         TypedQuery<${entity.name}> query = em.createQuery(req, ${entity.name}.class);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
@@ -182,7 +183,8 @@ public interface _${entity.name}Repository {
     public default Long count(Request<${entity.name}Dto> request, EntityManager em, Locale locale) throws DataAccessException, Exception  {
         String req = "select count(e.id) from ${entity.name} e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
-        req += getWhereExpression(request, param, locale);
+        // ✅ Wrapper pour ignorer le group by / order by générés
+        String req = "select count(e.id) from MaterielOperation e where e.id IN (" + whereClause + ")";
         ##req += " order by #foreach( $field in $entity.keyAttributes ) e.$field.name#end desc";
         jakarta.persistence.Query query = em.createQuery(req);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
