@@ -1,0 +1,106 @@
+name: Deploy WAR based on Tag
+
+on:
+  push:
+    tags:
+      - '*-*'   # Matches dev-0.0.1, stg-0.0.1, prod-1.0.0, etc.
+
+env:
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=${{ github.workspace }}/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract profile from tag
+        id: extract_profile
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+
+          # Extraire le préfixe avant le tiret
+          PREFIX=${TAG_NAME%%-*}
+          
+          # Mapper le préfixe vers le profil Maven
+          if [[ "$PREFIX" == "dev" ]]; then
+            PROFILE="dev"
+            ENV="dev,dev"
+          elif [[ "$PREFIX" == "stg" ]]; then
+            PROFILE="staging"
+            ENV="stg,staging"
+          elif [[ "$PREFIX" == "prod" ]]; then
+            PROFILE="production"
+            ENV="prod,production"
+          else
+            echo "❌ Tag invalide : le préfixe doit être dev-, stg-, ou prod-"
+            exit 1
+          fi
+
+          echo "TAG_NAME=$TAG_NAME"
+          echo "PROFILE=$PROFILE"
+          echo "ENV=$ENV"
+          
+          echo "profile=$PROFILE" >> $GITHUB_OUTPUT
+          echo "ENV=$ENV" >> $GITHUB_ENV
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-java25-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-java25-
+            ${{ runner.os }}-maven-
+
+      - name: Fix Maven Wrapper
+        run: |
+          if [ -f mvnw ]; then
+            dos2unix mvnw 2>/dev/null || sed -i 's/\r$//' mvnw
+            chmod +x mvnw
+          fi
+
+      - name: Build WAR with profile
+        run: |
+          chmod +x mvnw
+          ./mvnw ${MAVEN_CLI_OPTS} clean install -Dspring.profiles.active=${{ steps.extract_profile.outputs.profile }} -DskipTests || \
+          mvn ${MAVEN_CLI_OPTS} clean install -Dspring.profiles.active=${{ steps.extract_profile.outputs.profile }} -DskipTests
+          mv target/*.war target/prime-access-api-${{ steps.extract_profile.outputs.profile }}.war
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prime-access-api-${{ steps.extract_profile.outputs.profile }}-war
+          path: "target/prime-access-api-${{ steps.extract_profile.outputs.profile }}.war"
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          chmod 700 ~/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          eval $(ssh-agent -s)
+          echo "dorgeles" | ssh-add ~/.ssh/id_ed25519
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH connection successful'"
+
+      - name: Deploy to VPS
+        run: |
+          scp -o StrictHostKeyChecking=no \
+            target/prime-access-api-${{ steps.extract_profile.outputs.profile }}.war \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/
+
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
+            "sudo mv /tmp/prime-access-api-${{ steps.extract_profile.outputs.profile }}.war /opt/tomcat/webapps/"
