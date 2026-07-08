@@ -1,0 +1,151 @@
+Update date : Wed Jul 08 08:36:16 GMT 2026
+ 
+ Table 'mouvement' found in repository
+ . Column 'id' : Comment changed to null
+ . Column 'id' updated
+ . Column 'type_mouvement' : Comment changed to null
+ . Column 'type_mouvement' updated
+ . Column 'created_at' : Comment changed to null
+ . Column 'created_at' updated
+ . Column 'created_by' : Comment changed to null
+ . Column 'created_by' updated
+ . Column 'deleted_at' : Comment changed to null
+ . Column 'deleted_at' updated
+ . Column 'is_deleted' : Comment changed to null
+ . Column 'is_deleted' updated
+ . Column 'updated_at' : Comment changed to null
+ . Column 'updated_at' updated
+ . Column 'updated_by' : Comment changed to null
+ . Column 'updated_by' updated
+ . Column 'status_id' : Comment changed to null
+ . Column 'status_id' updated
+ . Column 'latitude' : Size changed to 38
+ . Column 'latitude' : Comment changed to null
+ . Column 'latitude' updated
+ . Column 'longitude' : Size changed to 38
+ . Column 'longitude' : Comment changed to null
+ . Column 'longitude' updated
+ . Column 'validation_date' : Comment changed to null
+ . Column 'validation_date' updated
+ . Column 'personnel_id' : Comment changed to null
+ . Column 'personnel_id' updated
+ . Column 'salle_id' : Comment changed to null
+ . Column 'salle_id' updated
+ . Column 'agent_securite_id' : Comment changed to null
+ . Column 'agent_securite_id' updated
+ (*) table 'mouvement' updated : 15 change(s)
+ 
+ Table 'personnel' found in repository
+ . Column 'id' : Comment changed to null
+ . Column 'id' updated
+ . Column 'nom' : Comment changed to null
+ . Column 'nom' updated
+ . Column 'prenoms' : Comment changed to null
+ . Column 'prenoms' updated
+ . Column 'telephone' : Comment changed to null
+ . Column 'telephone' updated
+ . Column 'fonction' : Comment changed to null
+ . Column 'fonction' updated
+ . Column 'contractant' : Comment changed to null
+ . Column 'contractant' updated
+ . Column 'created_at' : Comment changed to null
+ . Column 'created_at' updated
+ . Column 'created_by' : Comment changed to null
+ . Column 'created_by' updated
+ . Column 'deleted_at' : Comment changed to null
+ . Column 'deleted_at' updated
+ . Column 'is_deleted' : Comment changed to null
+ . Column 'is_deleted' updated
+ . Column 'updated_at' : Comment changed to null
+ . Column 'updated_at' updated
+ . Column 'updated_by' : Comment changed to null
+ . Column 'updated_by' updated
+ . Column 'status_id' : Comment changed to null
+ . Column 'status_id' updated
+ (*) table 'personnel' updated : 13 change(s)
+ 
+ Table 'salle' found in repository
+ . Column 'id' : Comment changed to null
+ . Column 'id' updated
+ . Column 'libelle' : Comment changed to null
+ . Column 'libelle' updated
+ . Column 'service' : Comment changed to null
+ . Column 'service' updated
+ . Column 'capacite' : Comment changed to null
+ . Column 'capacite' updated
+ . Column 'created_at' : Comment changed to null
+ . Column 'created_at' updated
+ . Column 'created_by' : Comment changed to null
+ . Column 'created_by' updated
+ . Column 'deleted_at' : Comment changed to null
+ . Column 'deleted_at' updated
+ . Column 'is_deleted' : Comment changed to null
+ . Column 'is_deleted' updated
+ . Column 'updated_at' : Comment changed to null
+ . Column 'updated_at' updated
+ . Column 'updated_by' : Comment changed to null
+ . Column 'updated_by' updated
+ . Column 'status_id' : Comment changed to null
+ . Column 'status_id' updated
+ . Column 'site_id' : Comment changed to null
+ . Column 'site_id' updated
+ (*) table 'salle' updated : 12 change(s)
+ 
+ Table 'setting' not found in repository
+ (+) table 'setting' added
+ 
+ Table 'site' found in repository
+ . Column 'id' : Comment changed to null
+ . Column 'id' updated
+ . Column 'libelle' : Comment changed to null
+ . Column 'libelle' updated
+ . Column 'adresse' : Comment changed to null
+ . Column 'adresse' updated
+ . Column 'created_at' : Comment changed to null
+ . Column 'created_at' updated
+ . Column 'created_by' : Comment changed to null
+ . Column 'created_by' updated
+ . Column 'deleted_at' : Comment changed to null
+ . Column 'deleted_at' updated
+ . Column 'is_deleted' : Comment changed to null
+ . Column 'is_deleted' updated
+ . Column 'updated_at' : Comment changed to null
+ . Column 'updated_at' updated
+ . Column 'updated_by' : Comment changed to null
+ . Column 'updated_by' updated
+ . Column 'status_id' : Comment changed to null
+ . Column 'status_id' updated
+ . Column 'latitude' : Size changed to 38
+ . Column 'latitude' : Comment changed to null
+ . Column 'latitude' updated
+ . Column 'longitude' : Size changed to 38
+ . Column 'longitude' : Comment changed to null
+ . Column 'longitude' updated
+ (*) table 'site' updated : 12 change(s)
+ 
+ Table 'utilisateur' found in repository
+ . Column 'id' : Comment changed to null
+ . Column 'id' updated
+ . Column 'login' : Comment changed to null
+ . Column 'login' updated
+ . Column 'password' : Comment changed to null
+ . Column 'password' updated
+ . Column 'role' : Comment changed to null
+ . Column 'role' updated
+ . Column 'personnel_id' : Comment changed to null
+ . Column 'personnel_id' updated
+ . Column 'created_at' : Comment changed to null
+ . Column 'created_at' updated
+ . Column 'created_by' : Comment changed to null
+ . Column 'created_by' updated
+ . Column 'deleted_at' : Comment changed to null
+ . Column 'deleted_at' updated
+ . Column 'is_deleted' : Comment changed to null
+ . Column 'is_deleted' updated
+ . Column 'updated_at' : Comment changed to null
+ . Column 'updated_at' updated
+ . Column 'updated_by' : Comment changed to null
+ . Column 'updated_by' updated
+ . Column 'status_id' : Comment changed to null
+ . Column 'status_id' updated
+ (*) table 'utilisateur' updated : 12 change(s)
