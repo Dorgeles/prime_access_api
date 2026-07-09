@@ -74,6 +74,7 @@ public interface PersonnelTransformer {
 		@Mapping(source="dto.prenoms", target="prenoms"),
 		@Mapping(source="dto.telephone", target="telephone"),
 		@Mapping(source="dto.fonction", target="fonction"),
+		@Mapping(source="dto.imageUrl", target="imageUrl"),
 		@Mapping(source="dto.contractant", target="contractant"),
 		@Mapping(source="dto.createdAt", dateFormat="YYYY-MM-dd HH:mm:ss",target="createdAt"),
 		@Mapping(source="dto.createdBy", target="createdBy"),

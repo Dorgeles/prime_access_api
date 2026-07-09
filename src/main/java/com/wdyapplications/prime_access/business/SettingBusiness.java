@@ -79,8 +79,6 @@ public class SettingBusiness implements IBasicBusiness<Request<SettingDto>, Resp
 			Map<String, java.lang.Object> fieldsToVerify = new HashMap<String, java.lang.Object>();
 			fieldsToVerify.put("code", dto.getCode());
 			fieldsToVerify.put("valeur", dto.getValeur());
-			fieldsToVerify.put("deletedAt", dto.getDeletedAt());
-			fieldsToVerify.put("statusId", dto.getStatusId());
 			if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
 				response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
 				response.setHasError(true);
@@ -149,6 +147,7 @@ public class SettingBusiness implements IBasicBusiness<Request<SettingDto>, Resp
 						.collect(Collectors.joining(", "));
 				throw new RuntimeException(errorMessage);
 			}
+			response.setStatus(functionalError.SUCCESS("setting", locale));
 			response.setItems(itemsDto);
 			response.setHasError(false);
 		}

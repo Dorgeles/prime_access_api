@@ -82,8 +82,6 @@ public class SiteBusiness implements IBasicBusiness<Request<SiteDto>, Response<S
 			Map<String, java.lang.Object> fieldsToVerify = new HashMap<String, java.lang.Object>();
 			fieldsToVerify.put("libelle", dto.getLibelle());
 			fieldsToVerify.put("adresse", dto.getAdresse());
-			fieldsToVerify.put("deletedAt", dto.getDeletedAt());
-			fieldsToVerify.put("statusId", dto.getStatusId());
 			fieldsToVerify.put("latitude", dto.getLatitude());
 			fieldsToVerify.put("longitude", dto.getLongitude());
 			if (!Validate.RequiredValue(fieldsToVerify).isGood()) {

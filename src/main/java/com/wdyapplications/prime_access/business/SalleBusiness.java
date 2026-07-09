@@ -85,8 +85,6 @@ public class SalleBusiness implements IBasicBusiness<Request<SalleDto>, Response
 			fieldsToVerify.put("libelle", dto.getLibelle());
 			fieldsToVerify.put("service", dto.getService());
 			fieldsToVerify.put("capacite", dto.getCapacite());
-			fieldsToVerify.put("deletedAt", dto.getDeletedAt());
-			fieldsToVerify.put("statusId", dto.getStatusId());
 			fieldsToVerify.put("siteId", dto.getSiteId());
 			if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
 				response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
@@ -166,6 +164,7 @@ public class SalleBusiness implements IBasicBusiness<Request<SalleDto>, Response
 						.collect(Collectors.joining(", "));
 				throw new RuntimeException(errorMessage);
 			}
+			response.setStatus(functionalError.SUCCESS("salle", locale));
 			response.setItems(itemsDto);
 			response.setHasError(false);
 		}

@@ -84,15 +84,10 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		for (MouvementDto dto : request.getDatas()) {
 			// Definir les parametres obligatoires
 			Map<String, java.lang.Object> fieldsToVerify = new HashMap<String, java.lang.Object>();
-			fieldsToVerify.put("typeMouvement", dto.getTypeMouvement());
-			fieldsToVerify.put("deletedAt", dto.getDeletedAt());
-			fieldsToVerify.put("statusId", dto.getStatusId());
 			fieldsToVerify.put("latitude", dto.getLatitude());
 			fieldsToVerify.put("longitude", dto.getLongitude());
-			fieldsToVerify.put("validationDate", dto.getValidationDate());
 			fieldsToVerify.put("personnelId", dto.getPersonnelId());
 			fieldsToVerify.put("salleId", dto.getSalleId());
-			fieldsToVerify.put("agentSecuriteId", dto.getAgentSecuriteId());
 			if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
 				response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
 				response.setHasError(true);
@@ -102,14 +97,6 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			// Verify if mouvement to insert do not exist
 			Mouvement existingEntity = null;
 
-/*
-			if (existingEntity != null) {
-				response.setStatus(functionalError.DATA_EXIST("mouvement id -> " + dto.getId(), locale));
-				response.setHasError(true);
-				return response;
-			}
-
-*/
 			// Verify if personnel2 exist
 			Personnel existingPersonnel2 = null;
 			if (dto.getPersonnelId() != null && dto.getPersonnelId() > 0){
@@ -130,22 +117,26 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 					return response;
 				}
 			}
-			// Verify if personnel exist
-			Personnel existingPersonnel = null;
-			if (dto.getAgentSecuriteId() != null && dto.getAgentSecuriteId() > 0){
-				existingPersonnel = personnelRepository.findOne(dto.getAgentSecuriteId(), false);
-				if (existingPersonnel == null) {
-					response.setStatus(functionalError.DATA_NOT_EXIST("personnel agentSecuriteId -> " + dto.getAgentSecuriteId(), locale));
-					response.setHasError(true);
-					return response;
-				}
-			}
-				Mouvement entityToSave = null;
-			entityToSave = MouvementTransformer.INSTANCE.toEntity(dto, existingPersonnel2, existingSalle, existingPersonnel);
+			// vérification du fait que le mouvement soit dans un rayon de 50 mettres autour du site
+			Boolean isInPerimeter = Utilities.estDansRayon(
+					existingSalle.getSite().getLatitude().doubleValue(),
+					existingSalle.getSite().getLongitude().doubleValue(),
+					dto.getLatitude().doubleValue(),
+					dto.getLongitude().doubleValue(),
+					50
+			);
+
+			Mouvement entityToSave = null;
+			entityToSave = MouvementTransformer.INSTANCE.toEntity(dto, existingPersonnel2, existingSalle, null);
 			entityToSave.setCreatedAt(Utilities.getCurrentDate());
 			entityToSave.setCreatedBy(request.getUser());
 			entityToSave.setIsDeleted(false);
-			entityToSave.setStatusId(StatusEnum.ACTIVE);
+			if(!isInPerimeter) {
+				entityToSave.setStatusId(StatusEnum.REFUSER);
+			} else {
+				entityToSave.setStatusId(StatusEnum.EN_COURS);
+			}
+			entityToSave.setTypeMouvement(determinerTypeMouvement(entityToSave.getPersonnel2().getId(), mouvementRepository));
 			items.add(entityToSave);
 		}
 
@@ -177,12 +168,21 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 						.collect(Collectors.joining(", "));
 				throw new RuntimeException(errorMessage);
 			}
+			response.setStatus(functionalError.SUCCESS("mouvement", locale));
 			response.setItems(itemsDto);
 			response.setHasError(false);
 		}
 
 		// System.out.println("----end create Mouvement-----");
 		return response;
+	}
+	public String determinerTypeMouvement(int idPersonnel, MouvementRepository repo) {
+		Optional<Mouvement> dernier = repo.findDernierMouvement(idPersonnel);
+
+		if (dernier.isEmpty() || dernier.get().getTypeMouvement() == TypeMouvement.SORTIR) {
+			return TypeMouvement.ENTRER;
+		}
+		return TypeMouvement.SORTIR;
 	}
 
 	/**

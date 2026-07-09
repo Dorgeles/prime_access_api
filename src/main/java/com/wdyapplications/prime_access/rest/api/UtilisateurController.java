@@ -26,6 +26,9 @@ import com.wdyapplications.prime_access.utils.enums.FunctionalityEnum;
 import com.wdyapplications.prime_access.business.*;
 import com.wdyapplications.prime_access.rest.fact.ControllerFactory;
 
+import java.text.ParseException;
+import java.util.Locale;
+
 /**
 Controller for table "utilisateur"
  * 
@@ -48,6 +51,13 @@ public class UtilisateurController {
     	// System.out.println("start method /utilisateur/create");
         Response<UtilisateurDto> response = controllerFactory.create(utilisateurBusiness, request, FunctionalityEnum.CREATE_UTILISATEUR);
 		// System.out.println("end method /utilisateur/create");
+        return response;
+    }
+    @RequestMapping(value="/login",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
+    public Response<UtilisateurDto> login(@RequestBody Request<UtilisateurDto> request) throws ParseException {
+        // System.out.println("start method /utilisateur/update");
+        Response<UtilisateurDto> response = utilisateurBusiness.login(request, Locale.FRENCH);
+        // System.out.println("end method /utilisateur/update");
         return response;
     }
 

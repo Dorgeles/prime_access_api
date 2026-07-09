@@ -55,6 +55,15 @@ public interface _PersonnelRepository {
     @Query("select e from Personnel e where e.nom = :nom and e.isDeleted = :isDeleted")
     List<Personnel> findByNom(@Param("nom")String nom, @Param("isDeleted")Boolean isDeleted);
     /**
+     * Finds Personnel by using imageUrl as a search criteria.
+     *
+     * @param imageUrl
+     * @return An Object Personnel whose imageUrl is equals to the given nom. If
+     *         no Personnel is found, this method returns null.
+     */
+    @Query("select e from Personnel e where e.imageUrl = :imageUrl and e.isDeleted = :isDeleted")
+    List<Personnel> findByImageUrl(@Param("imageUrl")String imageUrl, @Param("isDeleted")Boolean isDeleted);
+    /**
      * Finds Personnel by using prenoms as a search criteria.
      *
      * @param prenoms
@@ -233,14 +242,7 @@ public interface _PersonnelRepository {
         req += othersReq;
 
         //order
-        if(Direction.fromOptionalString(dto.getOrderDirection()).orElse(null) != null && Utilities.notBlank(dto.getOrderField())) {
-            req += " group by  e.id";
-            req += " order by e."+dto.getOrderField()+" "+dto.getOrderDirection();
-        }
-        else {
-            req += " group by  e.id";
-            req += " order by  e.id desc";
-        }
+        
         return req;
     }
 

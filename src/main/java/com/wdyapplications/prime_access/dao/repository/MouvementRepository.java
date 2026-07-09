@@ -3,14 +3,9 @@
 package com.wdyapplications.prime_access.dao.repository;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Locale;
 
 import com.wdyapplications.prime_access.dao.entity.Mouvement;
 import jakarta.persistence.EntityManager;
@@ -37,5 +32,7 @@ import com.wdyapplications.prime_access.dao.repository.base._MouvementRepository
  */
 @Repository
 public interface MouvementRepository extends JpaRepository<Mouvement, Integer>, _MouvementRepository {
-
+    @Query("SELECT m FROM Mouvement m WHERE m.personnel.id = :idPersonnel " +
+            "ORDER BY m.createdAt DESC LIMIT 1")
+    Optional<Mouvement> findDernierMouvement(@Param("idPersonnel") Integer idPersonnel);
 }

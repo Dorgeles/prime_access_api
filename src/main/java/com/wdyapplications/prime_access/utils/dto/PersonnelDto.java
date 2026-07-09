@@ -32,6 +32,7 @@ import lombok.Data;
 public class PersonnelDto extends _PersonnelDto{
 
     private String    statusLibelle               ;
+	private List<ImageDto>    images               ;
     
 	//----------------------------------------------------------------------
     // clone METHOD

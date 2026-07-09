@@ -131,6 +131,25 @@ public class Utilities {
 	public static Date asDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
+	public static <T> boolean isEmpty(List<T> list) {
+		return (list == null || list.isEmpty());
+	}
+
+	public static boolean isEmpty(Object obj) {
+		if (obj == null) return true;
+		if (obj instanceof String) return ((String) obj).trim().isEmpty();
+		if (obj instanceof Collection) return ((Collection<?>) obj).isEmpty();
+		if (obj instanceof Map) return ((Map<?, ?>) obj).isEmpty();
+		return false;
+	}
+	public static <T> boolean isEmpty(Set<T> set) {
+		return isEmpty(new ArrayList<>(set));
+	}
+
+
+	public static <K, V> boolean isEmpty(Map<K, V> map) {
+		return (map == null || map.isEmpty());
+	}
 
 	public static Date asDate(LocalDateTime localDateTime) {
 		return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
@@ -152,6 +171,36 @@ public class Utilities {
 	public static int duration(LocalDate startLocalDate, LocalDate endLocalDate) {
 		long duration = ChronoUnit.DAYS.between(startLocalDate, endLocalDate);
 		return Integer.parseInt(String.valueOf(duration + 1));
+	}
+	private static final double RAYON_TERRE_METRES = 6_371_000;
+
+	/**
+	 * Vérifie si deux coordonnées GPS sont à moins de 50 mètres l'une de l'autre.
+	 */
+	public static boolean estDansRayon(double lat1, double lon1,
+	                                   double lat2, double lon2,
+	                                   double rayonMetres) {
+		double distance = calculerDistance(lat1, lon1, lat2, lon2);
+		return distance <= rayonMetres;
+	}
+
+	/**
+	 * Calcule la distance en mètres entre deux points GPS (formule de Haversine).
+	 */
+	public static double calculerDistance(double lat1, double lon1,
+	                                      double lat2, double lon2) {
+		double lat1Rad = Math.toRadians(lat1);
+		double lat2Rad = Math.toRadians(lat2);
+		double deltaLat = Math.toRadians(lat2 - lat1);
+		double deltaLon = Math.toRadians(lon2 - lon1);
+
+		double a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2)
+				+ Math.cos(lat1Rad) * Math.cos(lat2Rad)
+				* Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+		return RAYON_TERRE_METRES * c;
 	}
 	
 	/**

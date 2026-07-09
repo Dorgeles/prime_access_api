@@ -32,6 +32,7 @@ import lombok.Data;
 public class UtilisateurDto extends _UtilisateurDto{
 
     private String    statusLibelle               ;
+	private PersonnelDto dataPersonnel;
     
 	//----------------------------------------------------------------------
     // clone METHOD

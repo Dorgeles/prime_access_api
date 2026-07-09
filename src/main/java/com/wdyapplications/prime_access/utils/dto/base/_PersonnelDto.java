@@ -38,7 +38,8 @@ public class _PersonnelDto implements Cloneable {
     protected String     nom                  ;
     protected String     prenoms              ;
     protected String     telephone            ;
-    protected String     fonction             ;
+	protected String     fonction             ;
+	protected String     imageUrl             ;
     protected String     contractant          ;
 	protected String     createdAt            ;
     protected Integer    createdBy            ;
@@ -57,9 +58,10 @@ public class _PersonnelDto implements Cloneable {
 	protected SearchParam<String>   nomParam              ;                     
 	protected SearchParam<String>   prenomsParam          ;                     
 	protected SearchParam<String>   telephoneParam        ;                     
-	protected SearchParam<String>   fonctionParam         ;                     
-	protected SearchParam<String>   contractantParam      ;                     
-	protected SearchParam<String>   createdAtParam        ;                     
+	protected SearchParam<String>   fonctionParam         ;
+	protected SearchParam<String>   contractantParam      ;
+	protected SearchParam<String>   imageUrlParam      ;
+	protected SearchParam<String>   createdAtParam        ;
 	protected SearchParam<Integer>  createdByParam        ;                     
 	protected SearchParam<String>   deletedAtParam        ;                     
 	protected SearchParam<Boolean>  isDeletedParam        ;                     

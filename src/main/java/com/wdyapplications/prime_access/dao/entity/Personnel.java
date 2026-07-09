@@ -54,6 +54,9 @@ public class Personnel implements Serializable, Cloneable {
     @Column(name = "contractant", length = 255)
     private String contractant;
 
+    @Column(name = "image_url", length = 255)
+    private String imageUrl;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
