@@ -94,9 +94,6 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 				return response;
 			}
 
-			// Verify if mouvement to insert do not exist
-			Mouvement existingEntity = null;
-
 			// Verify if personnel2 exist
 			Personnel existingPersonnel2 = null;
 			if (dto.getPersonnelId() != null && dto.getPersonnelId() > 0){
