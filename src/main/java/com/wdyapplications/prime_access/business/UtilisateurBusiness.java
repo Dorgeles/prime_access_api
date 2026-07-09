@@ -140,7 +140,7 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
             entityToSave.setCreatedAt(Utilities.getCurrentDate());
             entityToSave.setCreatedBy(request.getUser());
             entityToSave.setIsDeleted(false);
-            entityToSave.setStatusId(StatusEnum.EN_COURS);
+            entityToSave.setStatusId(StatusEnum.ACTIVE);
             try {
                 entityToSave.setPassword(ManageAes.encodeForMobile(dto.getPassword(), ParamKey.KEY_AES));
             } catch (Exception e) {
@@ -183,6 +183,45 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
         }
 
         // System.out.println("----end create Utilisateur-----");
+        return response;
+    }
+
+    public Response<UtilisateurDto> activeUtilisateurPersonnel(Request<UtilisateurDto> request, Locale locale) throws ParseException {
+        Response<UtilisateurDto> response = new Response<UtilisateurDto>();
+        List<Utilisateur> items = new ArrayList<Utilisateur>();
+
+        for (UtilisateurDto dto : request.getDatas()) {
+            Map<String, java.lang.Object> fieldsToVerify = new HashMap<String, java.lang.Object>();
+            fieldsToVerify.put("id", dto.getId());
+            if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
+                response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
+                response.setHasError(true);
+                return response;
+            }
+            PersonnelDto personnelDto = new PersonnelDto();
+            personnelDto.setId(dto.getPersonnelId());
+            personnelDto.setStatusId(StatusEnum.ACTIVE);
+            Request<PersonnelDto> requestPersonnel = new Request<>();
+            requestPersonnel.setDatas(Collections.singletonList(personnelDto));
+            Response<PersonnelDto> personnelResponse = personnelBusiness.update(requestPersonnel, locale);
+            if (personnelResponse.isHasError()) {
+                response.setStatus(personnelResponse.getStatus());
+                response.setHasError(true);
+                return response;
+            }
+            dto.setStatusId(StatusEnum.ACTIVE);
+            Request<UtilisateurDto> requestUtilisateur = new Request<>();
+            requestUtilisateur.setDatas(Collections.singletonList(dto));
+            Response<UtilisateurDto> utilisateurResponse = this.update(requestUtilisateur, locale);
+            if (utilisateurResponse.isHasError()) {
+                response.setStatus(utilisateurResponse.getStatus());
+                response.setHasError(true);
+                return response;
+            }
+            response.setStatus(functionalError.SUCCESS("utilisateur", locale));
+            response.setItems(utilisateurResponse.getItems());
+            response.setHasError(false);
+        }
         return response;
     }
 

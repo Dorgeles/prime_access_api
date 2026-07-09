@@ -32,8 +32,11 @@ import lombok.Data;
 @JsonPropertyOrder(alphabetic = true)
 public class MouvementDto extends _MouvementDto{
 
-    private String    statusLibelle               ;
-    
+	private String    statusLibelle               ;
+	private String    dateDebut               ;
+	private String    dateFin               ;
+	private String    granularite               ;
+
 	//----------------------------------------------------------------------
     // clone METHOD
     //----------------------------------------------------------------------

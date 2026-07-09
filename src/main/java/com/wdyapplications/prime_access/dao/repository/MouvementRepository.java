@@ -3,6 +3,7 @@
 package com.wdyapplications.prime_access.dao.repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,4 +36,19 @@ public interface MouvementRepository extends JpaRepository<Mouvement, Integer>, 
     @Query("SELECT m FROM Mouvement m WHERE m.personnel.id = :idPersonnel " +
             "ORDER BY m.createdAt DESC LIMIT 1")
     Optional<Mouvement> findDernierMouvement(@Param("idPersonnel") Integer idPersonnel);
+
+    @Query(value =
+            "SELECT date_trunc(:unite, m.created_at) AS periode, " +
+                    "       m.type_mouvement AS type, " +
+                    "       COUNT(*) AS total " +
+                    "FROM mouvement m " +
+                    "WHERE m.created_at BETWEEN :debut AND :fin " +
+                    "GROUP BY periode, m.type_mouvement " +
+                    "ORDER BY periode ASC",
+            nativeQuery = true)
+    List<Object[]> statistiquesBrutes(
+            @Param("unite") String unite,
+            @Param("debut") LocalDateTime debut,
+            @Param("fin") LocalDateTime fin
+    );
 }

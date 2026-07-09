@@ -26,6 +26,11 @@ import com.wdyapplications.prime_access.utils.enums.FunctionalityEnum;
 import com.wdyapplications.prime_access.business.*;
 import com.wdyapplications.prime_access.rest.fact.ControllerFactory;
 
+import java.text.ParseException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 /**
 Controller for table "mouvement"
  * 
@@ -56,6 +61,14 @@ public class MouvementController {
     	// System.out.println("start method /mouvement/update");
         Response<MouvementDto> response = controllerFactory.update(mouvementBusiness, request, FunctionalityEnum.UPDATE_MOUVEMENT);
 		// System.out.println("end method /mouvement/update");
+        return response;
+    }
+
+    @RequestMapping(value="/nbMouvementByCriteria",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
+    public Response<Map<String, Object>> nbMouvementByCriteria(@RequestBody Request<MouvementDto> request) throws ParseException {
+        // System.out.println("start method /mouvement/update");
+        Response<Map<String, Object>> response = mouvementBusiness.nbMouvement(request, Locale.FRENCH);
+        // System.out.println("end method /mouvement/update");
         return response;
     }
 

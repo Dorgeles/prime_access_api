@@ -15,10 +15,15 @@ import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.wdyapplications.prime_access.utils.*;
 import com.wdyapplications.prime_access.utils.dto.*;
@@ -104,6 +109,14 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 					return response;
 				}
 			}
+            if(existingPersonnel2 != null && existingPersonnel2.getStatusId() == StatusEnum.EN_COURS) {
+				Status status = new Status();
+				status.setMessage("Votre compte est en cours d'activation. Merci de bien vouloir contacter votre responsable.");
+				status.setCode("700");
+				response.setStatus(status);
+				response.setHasError(true);
+				return response;
+			}
 			// Verify if salle exist
 			Salle existingSalle = null;
 			if (dto.getSalleId() != null && dto.getSalleId() > 0){
@@ -173,6 +186,56 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		// System.out.println("----end create Mouvement-----");
 		return response;
 	}
+
+
+	public Response<Map<String, Object>> nbMouvement(Request<MouvementDto> request, Locale locale)  throws ParseException {
+		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+		try {
+			MouvementDto dto = request.getData();
+			String dateD = dto.getDateDebut().replace(" ", "T");
+			String dateF = dto.getDateFin().replace(" ", "T");
+			List<Map<String, Object>> statistiques = obtenirStatistiques(
+					LocalDateTime.parse(dateD),
+					LocalDateTime.parse(dateF),
+                    Objects.equals(dto.getGranularite(), "hour") ? Granularite.HEURE: Objects.equals(dto.getGranularite(), "day") ? Granularite.JOUR : Objects.equals(dto.getGranularite(), "week") ? Granularite.SEMAINE : Objects.equals(dto.getGranularite(), "month") ? Granularite.MOIS : Granularite.ANNEE
+			);
+			response.setItems(statistiques);
+			response.setStatus(functionalError.SUCCESS("statistiques", locale));
+			response.setHasError(false);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+	//Request<MouvementDto> request
+
+	public List<Map<String, Object>> obtenirStatistiques(LocalDateTime debut,
+	                                                         LocalDateTime fin,
+	                                                         Granularite granularite) {
+		if (debut == null || fin == null) {
+			throw new IllegalArgumentException("Les dates de début et de fin sont obligatoires");
+		}
+		if (debut.isAfter(fin)) {
+			throw new IllegalArgumentException("La date de début doit précéder la date de fin");
+		}
+		if (granularite == null) {
+			throw new IllegalArgumentException("La granularité est obligatoire");
+		}
+
+		List<Object[]> lignesBrutes = mouvementRepository.statistiquesBrutes(
+				granularite.getUnitePostgres(), debut, fin);
+		String[] headers = {"id", "name", "age", "city"};
+
+		return lignesBrutes.stream()
+				.map(row -> IntStream.range(0, Math.min(headers.length, row.length))
+						.boxed()
+						.collect(Collectors.toMap(
+								i -> headers[i],
+								i -> row[i]
+						)))
+				.collect(Collectors.toList());
+	}
+
 	public String determinerTypeMouvement(int idPersonnel, MouvementRepository repo) {
 		Optional<Mouvement> dernier = repo.findDernierMouvement(idPersonnel);
 

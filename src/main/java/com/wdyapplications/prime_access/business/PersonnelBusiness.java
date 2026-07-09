@@ -150,7 +150,7 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
             entityToSave.setCreatedAt(Utilities.getCurrentDate());
             entityToSave.setCreatedBy(request.getUser());
             entityToSave.setIsDeleted(false);
-            entityToSave.setStatusId(StatusEnum.ACTIVE);
+            entityToSave.setStatusId(StatusEnum.EN_COURS);
             items.add(entityToSave);
         }
 
