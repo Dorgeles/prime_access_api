@@ -48,6 +48,9 @@ public class Personnel implements Serializable, Cloneable {
     @Column(name = "telephone", length = 255)
     private String telephone;
 
+    @Column(name = "email", length = 255)
+    private String email;
+
     @Column(name = "fonction", length = 255)
     private String fonction;
 

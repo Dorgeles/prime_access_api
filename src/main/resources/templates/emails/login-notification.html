@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{emails/email-base :: head}">
+<body>
+<div th:replace="emails/email-base :: base('Security Alert', ~{::content})">
+    <div th:fragment="content">
+        <div class="header">
+            <div class="logo">🔒 Your Startup</div>
+            <h1>New Login Detected</h1>
+        </div>
+
+        <div class="content">
+            <p>Hi <span th:text="${name}">User</span>,</p>
+
+            <p>We noticed a new login to your <span th:text="${company}">Your Startup</span> account:</p>
+
+            <div class="device-info">
+                <p><strong>Time:</strong> <span th:text="${time}">Just now</span></p>
+                <p><strong>Device:</strong> <span th:text="${device}">Chrome on Windows</span></p>
+                <p><strong>Location:</strong> <span th:text="${location}">San Francisco, CA</span></p>
+            </div>
+
+            <div class="security-note">
+                <p><strong>Is this you?</strong> If yes, no further action is needed.</p>
+                <p><strong>If not:</strong> Please change your password immediately and contact our support team.</p>
+            </div>
+
+            <a href="https://yourstartup.com/security" class="button">Review Account Activity</a>
+
+            <p style="margin-top: 30px;">
+                <small>For security reasons, we recommend enabling two-factor authentication for additional protection.</small>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© <span th:text="${year}">2024</span> <span th:text="${company}">Your Startup</span>. All rights reserved.</p>
+            <p>This is an automated security email. Please do not reply.</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -36,7 +36,8 @@ public class _PersonnelDto implements Cloneable {
     protected Integer    id                   ; // Primary Key
 
     protected String     nom                  ;
-    protected String     prenoms              ;
+	protected String     prenoms              ;
+	protected String     email              ;
     protected String     telephone            ;
 	protected String     fonction             ;
 	protected String     imageUrl             ;
@@ -56,8 +57,9 @@ public class _PersonnelDto implements Cloneable {
 	// Search param
 	protected SearchParam<Integer>  idParam               ;                     
 	protected SearchParam<String>   nomParam              ;                     
-	protected SearchParam<String>   prenomsParam          ;                     
-	protected SearchParam<String>   telephoneParam        ;                     
+	protected SearchParam<String>   prenomsParam          ;
+	protected SearchParam<String>   telephoneParam        ;
+	protected SearchParam<String>   emailParam        	  ;
 	protected SearchParam<String>   fonctionParam         ;
 	protected SearchParam<String>   contractantParam      ;
 	protected SearchParam<String>   imageUrlParam      ;

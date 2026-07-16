@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="email-base :: head">
+<body>
+<div th:replace="email-base :: base('Ordonnance Prête', ~{::content})">
+    <div th:fragment="content">
+        <div class="header">
+            <div class="logo">💊 Prime Access</div>
+            <h1>Votre ordonnance est prête !</h1>
+        </div>
+
+        <div class="content">
+            <h2>Bonjour <span th:text="${name}">Client</span>,</h2>
+
+            <p>Bonne nouvelle ! Votre ordonnance a été préparée et vous attend en pharmacie.</p>
+
+            <div class="device-info">
+                <h3 style="margin-bottom: 15px; color: #667eea;">📍 Informations de retrait</h3>
+
+                <p style="margin: 10px 0;">
+                    <strong>Pharmacie :</strong><br>
+                    <span th:text="${pharmacyName}">Pharmacie Centrale</span>
+                </p>
+
+                <p style="margin: 10px 0;">
+                    <strong>Adresse :</strong><br>
+                    <span th:text="${pharmacyAddress}">123 Avenue Principale, Abidjan</span>
+                </p>
+
+                <p style="margin: 10px 0;">
+                    <strong>Horaires d'ouverture :</strong><br>
+                    <span th:text="${pharmacyHours}">Lundi - Samedi : 8h00 - 20h00</span>
+                </p>
+
+                <p style="margin: 10px 0;">
+                    <strong>Numéro de référence :</strong><br>
+                    <span th:text="${orderReference}" style="font-family: monospace; font-size: 18px; color: #667eea;">#ORD-12345</span>
+                </p>
+            </div>
+
+            <div class="security-note">
+                <strong>⚠️ Important :</strong> Veuillez présenter ce numéro de référence ainsi qu'une pièce d'identité lors du retrait de votre ordonnance.
+            </div>
+
+            <a th:href="${pharmacyMapLink}" class="button">📍 Voir l'itinéraire</a>
+
+            <p style="margin-top: 30px;">Pour toute question, n'hésitez pas à contacter directement la pharmacie :</p>
+            <p style="text-align: center; font-size: 18px; margin: 10px 0;">
+                <strong>📞 <span th:text="${pharmacyPhone}">+225 XX XX XX XX XX</span></strong>
+            </p>
+
+            <p style="margin-top: 20px; font-size: 14px; color: #666;">
+                Merci de faire confiance à Prime Access pour vos besoins pharmaceutiques.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© <span th:text="${year}">2024</span> <span>WDY Applications</span>. All rights reserved.</p>
+            <p>Abidjan Paillet, Rue Samora Marchel</p>
+            <p style="font-size: 12px; margin-top: 20px;">
+                Vous recevez cet email car vous avez passé une commande sur Prime Access.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

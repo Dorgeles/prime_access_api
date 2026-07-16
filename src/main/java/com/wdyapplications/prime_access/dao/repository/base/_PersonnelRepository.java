@@ -82,6 +82,15 @@ public interface _PersonnelRepository {
     @Query("select e from Personnel e where e.telephone = :telephone and e.isDeleted = :isDeleted")
     Personnel findByTelephone(@Param("telephone")String telephone, @Param("isDeleted")Boolean isDeleted);
     /**
+     * Finds Personnel by using email as a search criteria.
+     *
+     * @param email
+     * @return An Object Personnel whose telephone is equals to the given telephone. If
+     *         no Personnel is found, this method returns null.
+     */
+    @Query("select e from Personnel e where e.email = :email and e.isDeleted = :isDeleted")
+    Personnel findByEmail(@Param("email")String email, @Param("isDeleted")Boolean isDeleted);
+    /**
      * Finds Personnel by using fonction as a search criteria.
      *
      * @param fonction
@@ -269,6 +278,9 @@ public interface _PersonnelRepository {
             }
             if (Utilities.isNotBlank(dto.getTelephone()) || Utilities.searchParamIsNotEmpty(dto.getTelephoneParam())) {
                 listOfQuery.add(CriteriaUtils.generateCriteria("telephone", dto.getTelephone(), "e.telephone", "String", dto.getTelephoneParam(), param, index, locale));
+            }
+            if (Utilities.isNotBlank(dto.getEmail()) || Utilities.searchParamIsNotEmpty(dto.getEmailParam())) {
+                listOfQuery.add(CriteriaUtils.generateCriteria("email", dto.getEmail(), "e.email", "String", dto.getEmailParam(), param, index, locale));
             }
             if (Utilities.isNotBlank(dto.getFonction()) || Utilities.searchParamIsNotEmpty(dto.getFonctionParam())) {
                 listOfQuery.add(CriteriaUtils.generateCriteria("fonction", dto.getFonction(), "e.fonction", "String", dto.getFonctionParam(), param, index, locale));

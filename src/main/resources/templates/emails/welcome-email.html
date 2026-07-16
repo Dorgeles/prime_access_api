@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="email-base :: head">
+<body>
+<div th:replace="email-base :: base('Welcome', ~{::content})">
+    <div th:fragment="content">
+        <div class="header">
+            <div class="logo">🚀 Prime Access</div>
+            <h1>Bienvenue à board <span th:text="${name}">User</span>!</h1>
+        </div>
+
+        <div class="content">
+            <h2>Merci de choisir notre solution!</h2>
+
+            <p>Nous portons votre profil au responsable de site pour validation <a href="https://dorgeles.dje.com">Voir contact</a></p>
+        </div>
+
+        <div class="footer">
+            <p>© <span th:text="${year}">2024</span> <span>WDY Applications</span>. All rights reserved.</p>
+            <p>Abidjan Paillet, Rue Samora Marchel</p>
+            <div class="social-links">
+                <a href="">Twitter</a>
+                <a href="">LinkedIn</a>
+                <a href="">GitHub</a>
+            </div>
+            <p style="font-size: 12px; margin-top: 20px;">
+                You're receiving this email because you signed up for <span th:text="${company}">Your Startup</span>.
+                <br>
+                <a href="">Unsubscribe</a>
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

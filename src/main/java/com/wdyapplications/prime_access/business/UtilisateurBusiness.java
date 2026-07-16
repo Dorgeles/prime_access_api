@@ -9,11 +9,13 @@
 package com.wdyapplications.prime_access.business;
 
 import com.wdyapplications.prime_access.dao.registry.SettingRegistry;
+import com.wdyapplications.prime_access.utils.events.UtilisateurEmailNotification;
 import com.wdyapplications.prime_access.utils.security.ManageAes;
 import com.wdyapplications.prime_access.utils.security.ParamKey;
 import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
@@ -59,6 +61,8 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
     private TechnicalError technicalError;
     @Autowired
     private SettingRegistry settingRegistry;
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
     @Autowired
     private ExceptionUtils exceptionUtils;
     @PersistenceContext
@@ -158,6 +162,15 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
                 response.setHasError(true);
                 return response;
             }
+            for (Utilisateur saved : itemsSaved) {
+                Map<String, Object> newData = new HashMap<>();
+                newData.put("sender", "noreply@wdyapplications");
+                newData.put("template", "NEW_USER");
+                eventPublisher.publishEvent(new UtilisateurEmailNotification(
+                        saved,
+                        newData
+                        ));
+            }
             List<UtilisateurDto> itemsDto = (Utilities.isTrue(request.getIsSimpleLoading())) ? UtilisateurTransformer.INSTANCE.toLiteDtos(itemsSaved) : UtilisateurTransformer.INSTANCE.toDtos(itemsSaved);
 
             final int size = itemsSaved.size();
@@ -223,6 +236,17 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
             response.setHasError(false);
         }
         return response;
+    }
+
+    public void testEmail() {
+        Utilisateur utilisateur = utilisateurRepository.findOne(3, false);
+        Map<String, Object> newData = new HashMap<>();
+        newData.put("sender", "noreply@wdyapplications");
+        newData.put("template", "welcome-email");
+        eventPublisher.publishEvent(new UtilisateurEmailNotification(
+                utilisateur,
+                newData
+        ));
     }
 
     public Response<UtilisateurDto> login(Request<UtilisateurDto> request, Locale locale) throws ParseException {

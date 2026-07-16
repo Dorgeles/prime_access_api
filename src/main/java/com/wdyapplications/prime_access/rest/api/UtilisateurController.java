@@ -11,11 +11,8 @@ package com.wdyapplications.prime_access.rest.api;
 
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.wdyapplications.prime_access.utils.*;
 import com.wdyapplications.prime_access.utils.dto.*;
@@ -53,12 +50,21 @@ public class UtilisateurController {
 		// System.out.println("end method /utilisateur/create");
         return response;
     }
+
     @RequestMapping(value="/login",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
     public Response<UtilisateurDto> login(@RequestBody Request<UtilisateurDto> request) throws ParseException {
         // System.out.println("start method /utilisateur/update");
         Response<UtilisateurDto> response = utilisateurBusiness.login(request, Locale.FRENCH);
         // System.out.println("end method /utilisateur/update");
         return response;
+    }
+
+    @GetMapping(value="/test",produces={"application/json"})
+    public ResponseEntity test(@RequestBody Request<UtilisateurDto> request) throws ParseException {
+        // System.out.println("start method /utilisateur/update");
+        utilisateurBusiness.testEmail();
+        // System.out.println("end method /utilisateur/update");
+        return ResponseEntity.ok().build();
     }
 
     @RequestMapping(value="/activerUtilisateurPersonnel",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})

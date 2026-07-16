@@ -73,6 +73,7 @@ public interface PersonnelTransformer {
 		@Mapping(source="dto.nom", target="nom"),
 		@Mapping(source="dto.prenoms", target="prenoms"),
 		@Mapping(source="dto.telephone", target="telephone"),
+		@Mapping(source="dto.email", target="email"),
 		@Mapping(source="dto.fonction", target="fonction"),
 		@Mapping(source="dto.imageUrl", target="imageUrl"),
 		@Mapping(source="dto.contractant", target="contractant"),
