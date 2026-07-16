@@ -400,7 +400,9 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
                 return response;
             }
 
-            response.setItems(Arrays.asList(UtilisateurTransformer.INSTANCE.toDto(existingUtilisateur)));
+            dto = this.getFullInfos(UtilisateurTransformer.INSTANCE.toDto(existingUtilisateur), 1, request.getIsSimpleLoading(), locale);
+
+            response.setItems(Arrays.asList(dto));
             response.setStatus(functionalError.SUCCESS("Utilisateur connecté", locale));
             response.setHasError(false);
         } catch (PermissionDeniedDataAccessException e) {
@@ -647,10 +649,13 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
         if (size > 1) {
             return dto;
         }
-        Utilisateur user = utilisateurRepository.findOne(dto.getId(), false);
-        if(user != null) {
-            dto.setDataPersonnel(PersonnelTransformer.INSTANCE.toDto(user.getPersonnel()));
+        Personnel personnel = personnelRepository.findOne(dto.getPersonnelId(), false);
+        if(personnel != null) {
+            dto.setDataPersonnel(PersonnelTransformer.INSTANCE.toDto(personnel));
         }
+        dto.setPersonnelNom(null);
+        dto.setPersonnelPrenoms(null);
+        dto.setPersonnelId(null);
         return dto;
     }
 }
