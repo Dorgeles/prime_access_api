@@ -8,11 +8,12 @@
 
 package com.wdyapplications.prime_access.business;
 
+import com.google.gson.Gson;
 import com.wdyapplications.prime_access.dao.registry.SettingRegistry;
 import com.wdyapplications.prime_access.utils.events.UtilisateurEmailNotification;
+import com.wdyapplications.prime_access.utils.redis.CacheUtils;
 import com.wdyapplications.prime_access.utils.security.ManageAes;
 import com.wdyapplications.prime_access.utils.security.ParamKey;
-import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,12 +28,12 @@ import jakarta.persistence.PersistenceContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.wdyapplications.prime_access.utils.*;
 import com.wdyapplications.prime_access.utils.dto.*;
 import com.wdyapplications.prime_access.utils.enums.*;
-import com.wdyapplications.prime_access.utils.contract.*;
 import com.wdyapplications.prime_access.utils.contract.IBasicBusiness;
 import com.wdyapplications.prime_access.utils.contract.Request;
 import com.wdyapplications.prime_access.utils.contract.Response;
@@ -57,6 +58,8 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
     private PersonnelRepository personnelRepository;
     @Autowired
     private FunctionalError functionalError;
+    @Autowired
+    private CacheUtils cacheUtils;
     @Autowired
     private TechnicalError technicalError;
     @Autowired
@@ -169,7 +172,7 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
                 eventPublisher.publishEvent(new UtilisateurEmailNotification(
                         saved,
                         newData
-                        ));
+                ));
             }
             List<UtilisateurDto> itemsDto = (Utilities.isTrue(request.getIsSimpleLoading())) ? UtilisateurTransformer.INSTANCE.toLiteDtos(itemsSaved) : UtilisateurTransformer.INSTANCE.toDtos(itemsSaved);
 
@@ -196,6 +199,121 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
         }
 
         // System.out.println("----end create Utilisateur-----");
+        return response;
+    }
+
+    public Response<UtilisateurDto> resetPassword(Request<UtilisateurDto> request, Locale locale) throws ParseException {
+        Response<UtilisateurDto> response = new Response<UtilisateurDto>();
+        try {
+            UtilisateurDto dto = request.getData();
+            HashMap<String, Object> fieldsToVerify = new HashMap<>();
+            fieldsToVerify.put("login", dto.getLogin());
+            fieldsToVerify.put("token", dto.getToken());
+            fieldsToVerify.put("password", dto.getPassword());
+            fieldsToVerify.put("confirmPassword", dto.getConfirmPassword());
+            if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
+                response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
+                response.setHasError(true);
+                return response;
+            }
+            Object cachedData = cacheUtils.getCachedData(dto.getLogin());
+            if (cachedData == null){
+                Status status = new Status();
+                status.setCode("590");
+                status.setMessage("Vous n'avez aucune demande de changement de mot de passe en cours");
+                response.setStatus(status);
+                response.setHasError(true);
+                return response;
+            }
+            if (!Objects.equals(dto.getPassword(), dto.getConfirmPassword())) {
+                response.setStatus(functionalError.DATA_NOT_EXIST("Les mots de passe ne correspondent pas", locale));
+                response.setHasError(true);
+                return response;
+            }
+
+            Utilisateur user = utilisateurRepository.findByLogin(dto.getLogin(), false);
+            if (user == null) {
+                response.setStatus(functionalError.DATA_NOT_EXIST("utilisateur login -> " + dto.getLogin(), locale));
+                response.setHasError(true);
+                return response;
+            }
+            Request<UtilisateurDto> requestUser = new Request<>();
+            dto.setId(user.getId());
+            requestUser.setDatas(Collections.singletonList(dto));
+            requestUser.setUser(1);
+            Response<UtilisateurDto> updateResponse = this.update(requestUser, locale);
+            if (updateResponse.isHasError()) {
+                response.setStatus(updateResponse.getStatus());
+                response.setHasError(true);
+                return response;
+            }
+            cacheUtils.deleteCache(dto.getLogin());
+            response.setStatus(functionalError.SUCCESS("Mot de passe réinitialisé avec succès", locale));
+            response.setHasError(false);
+
+        } catch (PermissionDeniedDataAccessException e) {
+            exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (DataAccessResourceFailureException e) {
+            exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+        } catch (DataAccessException e) {
+            exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public Response<UtilisateurDto> sendResetPassword(Request<UtilisateurDto> request, Locale locale) throws ParseException {
+        Response<UtilisateurDto> response = new Response<UtilisateurDto>();
+        try {
+            UtilisateurDto dto = request.getData();
+            if (dto != null) {
+                HashMap<String, Object> fieldsToVerify = new HashMap<>();
+                fieldsToVerify.put("login", dto.getLogin());
+                if (!Validate.RequiredValue(fieldsToVerify).isGood()) {
+                    response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
+                    response.setHasError(true);
+                    return response;
+                }
+            }
+            Utilisateur existingUtilisateur = null;
+
+            existingUtilisateur = utilisateurRepository.findByLogin(dto.getLogin(), false);
+
+            if (existingUtilisateur == null) {
+                Status status = new Status();
+                status.setCode("545");
+                status.setMessage("Un mail a été envoyé à l'adresse email associée à ce compte si elle existe.");
+                response.setStatus(status);
+                response.setHasError(Boolean.TRUE);
+                return response;
+            }
+
+            String newPassword = Utilities.generateRandomPassword(4);
+            cacheUtils.cacheData(existingUtilisateur.getLogin(), String.valueOf(newPassword), 5); // Cache for 5 minutes
+            // Send email notification
+            Map<String, Object> newData = new HashMap<>();
+            newData.put("template", "password-reset");
+            newData.put("resetLink", newPassword);
+            eventPublisher.publishEvent(new UtilisateurEmailNotification(
+                    existingUtilisateur,
+                    newData
+            ));
+            response.setStatus(functionalError.SUCCESS("Mot de passe réinitialisé et envoyé par email", locale));
+            response.setHasError(false);
+        } catch (PermissionDeniedDataAccessException e) {
+            exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (DataAccessResourceFailureException e) {
+            exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+        } catch (DataAccessException e) {
+            exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return response;
     }
 

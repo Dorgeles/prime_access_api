@@ -43,6 +43,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -97,6 +98,20 @@ public class Utilities {
 			}
 		}
 		return request.getRemoteAddr();
+	}
+	// a méthod that generate random int according to lenght
+	public static String generateRandomPassword(int length) {
+		if (length < 1) {
+			throw new IllegalArgumentException("Length must be at least 1");
+		}
+		if (length > 10) {
+			throw new IllegalArgumentException("Length cannot exceed 10 for int type");
+		}
+
+		int min = (int) Math.pow(10, length - 1);
+		int max = (int) Math.pow(10, length) - 1;
+
+		return String.valueOf(ThreadLocalRandom.current().nextInt(min, max + 1)) ;
 	}
 
 	private static List<String> listeBase = Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1",

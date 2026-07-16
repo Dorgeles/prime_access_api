@@ -31,9 +31,11 @@ import lombok.Data;
 @JsonPropertyOrder(alphabetic = true)
 public class UtilisateurDto extends _UtilisateurDto{
 
-    private String    statusLibelle               ;
+	private String    statusLibelle               ;
+	private String    confirmPassword             ;
+	private String    token             ;
 	private PersonnelDto dataPersonnel;
-    
+
 	//----------------------------------------------------------------------
     // clone METHOD
     //----------------------------------------------------------------------

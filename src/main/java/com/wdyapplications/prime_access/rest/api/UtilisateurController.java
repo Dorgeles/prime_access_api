@@ -75,6 +75,22 @@ public class UtilisateurController {
         return response;
     }
 
+    @RequestMapping(value="/sendResetPassword",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
+    public Response<UtilisateurDto> sendResetPassword(@RequestBody Request<UtilisateurDto> request) throws ParseException {
+        // System.out.println("start method /utilisateur/update");
+        Response<UtilisateurDto> response = utilisateurBusiness.sendResetPassword(request, Locale.FRENCH);
+        // System.out.println("end method /utilisateur/update");
+        return response;
+    }
+
+    @RequestMapping(value="/resetPassword",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
+    public Response<UtilisateurDto> resetPassword(@RequestBody Request<UtilisateurDto> request) throws ParseException {
+        // System.out.println("start method /utilisateur/update");
+        Response<UtilisateurDto> response = utilisateurBusiness.resetPassword(request, Locale.FRENCH);
+        // System.out.println("end method /utilisateur/update");
+        return response;
+    }
+
 	@RequestMapping(value="/update",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
     public Response<UtilisateurDto> update(@RequestBody Request<UtilisateurDto> request) {
     	// System.out.println("start method /utilisateur/update");
