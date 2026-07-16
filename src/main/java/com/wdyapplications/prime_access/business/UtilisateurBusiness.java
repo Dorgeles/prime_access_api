@@ -647,7 +647,10 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
         if (size > 1) {
             return dto;
         }
-
+        Utilisateur user = utilisateurRepository.findOne(dto.getId(), false);
+        if(user != null) {
+            dto.setDataPersonnel(PersonnelTransformer.INSTANCE.toDto(user.getPersonnel()));
+        }
         return dto;
     }
 }
