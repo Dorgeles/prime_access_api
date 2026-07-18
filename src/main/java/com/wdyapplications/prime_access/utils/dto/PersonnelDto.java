@@ -33,7 +33,9 @@ public class PersonnelDto extends _PersonnelDto{
 
     private String    statusLibelle               ;
 	private List<ImageDto>    images               ;
-    
+	private String login;
+	private String role;
+
 	//----------------------------------------------------------------------
     // clone METHOD
     //----------------------------------------------------------------------

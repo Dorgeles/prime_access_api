@@ -11,6 +11,7 @@ package com.wdyapplications.prime_access.business;
 import com.wdyapplications.prime_access.dao.registry.SettingRegistry;
 import com.wdyapplications.prime_access.utils.okhttp.MinioExternalService;
 
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -428,7 +429,12 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
      */
     private PersonnelDto getFullInfos(PersonnelDto dto, Integer size, Boolean isSimpleLoading, Locale locale) throws Exception {
         // put code here
-
+        // afficher le role de l'utilisateur associé
+        Utilisateur utilisateur = utilisateurRepository.findUtilisateurByPersonnelId(dto.getId(), false);
+        if (utilisateur != null) {
+            dto.setLogin(utilisateur.getLogin());
+            dto.setRole(utilisateur.getRole());
+        }
         if (Utilities.isTrue(isSimpleLoading)) {
             return dto;
         }
