@@ -11,6 +11,9 @@ package com.wdyapplications.prime_access.business;
 import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
@@ -426,6 +429,94 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		}
 
 		// System.out.println("----end delete Mouvement-----");
+		return response;
+	}
+
+	public Response<Map<String, Object>> nbInOutToDay(Request<MouvementDto> request, Locale locale) {
+		//// System.out.println("----begin nbServiceByStatus-----");
+
+		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+
+		try {
+			List<Map<String, Object>> items = new ArrayList<>();
+
+			items = mouvementRepository.nbInOutToDay(request, em);
+
+			if (items.isEmpty()) {
+				response.setStatus(functionalError.DATA_EMPTY("données", locale));
+				response.setHasError(false);
+				return response;
+			}
+			response.setItems(items);
+			response.setHasError(false);
+
+			// // System.out.println("----end nbDercoByStatus-----");
+		} catch (PermissionDeniedDataAccessException e) {
+			exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (DataAccessResourceFailureException e) {
+			exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+		} catch (DataAccessException e) {
+			exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (RuntimeException e) {
+			exceptionUtils.RUNTIME_EXCEPTION(response, locale, e);
+		} catch (Exception e) {
+			exceptionUtils.EXCEPTION(response, locale, e);
+		} finally {
+			if (response.isHasError() && response.getStatus() != null) {
+				// // System.out.println("Erreur| code: {} -  message: {}", response.getStatus().getCode(), response.getStatus().getMessage());
+				throw new RuntimeException(response.getStatus().getCode() + ";" + response.getStatus().getMessage());
+			}
+		}
+		return response;
+	}
+
+	public Response<Map<String, Object>> nbInOutByGranularite(Request<MouvementDto> request, Locale locale) {
+		//// System.out.println("----begin nbServiceByStatus-----");
+
+		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+
+		try {
+
+			Map<String, Object> fieldsToVerifyUser = new HashMap<String, Object>();
+			fieldsToVerifyUser.put("granularite", request.getData().getGranularite());
+			if (!Validate.RequiredValue(fieldsToVerifyUser).isGood()) {
+				response.setStatus(functionalError.FIELD_EMPTY(Validate.getValidate().getField(), locale));
+				response.setHasError(true);
+				return response;
+			}
+
+
+			List<Map<String, Object>> items = new ArrayList<>();
+
+			items = mouvementRepository.nbInOutByGranularite(request, em); // nbServiceOrderByStatus
+
+			if (items.isEmpty()) {
+				response.setStatus(functionalError.DATA_EMPTY("données", locale));
+				response.setHasError(false);
+				return response;
+			}
+			// Utilities.sortListByMapKey(items, "name", false);
+
+			response.setItems(items);
+			response.setHasError(false);
+
+			// // System.out.println("----end nbDercoByStatus-----");
+		} catch (PermissionDeniedDataAccessException e) {
+			exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (DataAccessResourceFailureException e) {
+			exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+		} catch (DataAccessException e) {
+			exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (RuntimeException e) {
+			exceptionUtils.RUNTIME_EXCEPTION(response, locale, e);
+		} catch (Exception e) {
+			exceptionUtils.EXCEPTION(response, locale, e);
+		} finally {
+			if (response.isHasError() && response.getStatus() != null) {
+				// // System.out.println("Erreur| code: {} -  message: {}", response.getStatus().getCode(), response.getStatus().getMessage());
+				throw new RuntimeException(response.getStatus().getCode() + ";" + response.getStatus().getMessage());
+			}
+		}
 		return response;
 	}
 

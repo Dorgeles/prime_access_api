@@ -13,6 +13,9 @@ import com.wdyapplications.prime_access.utils.okhttp.MinioExternalService;
 
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.EntityManager;
@@ -367,6 +370,36 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
         }
 
         // System.out.println("----end delete Personnel-----");
+        return response;
+    }
+
+    public Response<Map<String, Object>> countPersonnel(Request<PersonnelDto> request, Locale locale) {
+        Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+
+        try {
+            Long items = personnelRepository.count(request, em, locale);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("count", items);
+            response.setItems(Collections.singletonList(result));
+            response.setHasError(false);
+
+        } catch (PermissionDeniedDataAccessException e) {
+            exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (DataAccessResourceFailureException e) {
+            exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+        } catch (DataAccessException e) {
+            exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+        } catch (RuntimeException e) {
+            exceptionUtils.RUNTIME_EXCEPTION(response, locale, e);
+        } catch (Exception e) {
+            exceptionUtils.EXCEPTION(response, locale, e);
+        } finally {
+            if (response.isHasError() && response.getStatus() != null) {
+                // // System.out.println("Erreur| code: {} -  message: {}", response.getStatus().getCode(), response.getStatus().getMessage());
+                throw new RuntimeException(response.getStatus().getCode() + ";" + response.getStatus().getMessage());
+            }
+        }
         return response;
     }
 

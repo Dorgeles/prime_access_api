@@ -207,8 +207,78 @@ public interface _MouvementRepository {
   @Query("select e from Mouvement e where e.personnel.id = :agentSecuriteId and e.isDeleted = :isDeleted")
   Mouvement findMouvementByAgentSecuriteId(@Param("agentSecuriteId")Integer agentSecuriteId, @Param("isDeleted")Boolean isDeleted);
 
+    default List<Map<String, Object>> nbInOutToDay(Request<MouvementDto> request, EntityManager em) throws ParseException {
+        final MouvementDto dto = request.getData();
+        Map<String, Object> mapFinal = new HashMap<>();
+        HashMap<String, Object> param = new HashMap<>();
+        List<Map<String, Object>> mapListFinal = new ArrayList<>();
+        String querry = "    SELECT" +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_entrees," +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties " +
+                "    FROM public.mouvement " +
+                "    WHERE is_deleted IS NOT TRUE" +
+                "    AND created_at >= date_trunc('day', now())" +
+                "    AND created_at <  date_trunc('day', now()) + interval '1 day';";
+        jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(querry);
+        for (Map.Entry<String, Object> entry : param.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        List<Object[]> datas = query.getResultList();
+        if (!datas.isEmpty()) {
+            Object[] data = datas.get(0);
+            mapFinal.put("nb_entrees", data[0]);
+            mapFinal.put("nb_sorties", data[1]);
+        }
+        mapListFinal.add(mapFinal);
+        return mapListFinal;
+    }
 
 
+    default List<Map<String, Object>> nbInOutByGranularite(Request<MouvementDto> request, EntityManager em) throws ParseException {
+        final MouvementDto dto = request.getData();
+        List<Map<String, Object>> mapListFinal = new ArrayList<>();
+
+        String dateDebut ="'"+ dto.getCreatedAtParam().getStart() + "'";
+        String dateFin ="'"+ dto.getCreatedAtParam().getEnd() + "'";
+        String granularite = "'"+ dto.getGranularite() +"'";
+        HashMap<String, Object> param = new HashMap<>();
+        String querry = " SELECT " +
+                "    date_trunc( "+ granularite +", created_at) AS periode_tri, " +
+                "    CASE  " + granularite +
+                "        WHEN 'hour'  THEN to_char(created_at, 'DD/MM/YYYY HH24\"h\"')" +
+                "        WHEN 'day'   THEN to_char(created_at, 'DD/MM/YYYY')" +
+                "        WHEN 'week'  THEN 'S' || to_char(created_at, 'IW') || '-' || to_char(created_at, 'IYYY')" +
+                "        WHEN 'month' THEN" +
+                "            (ARRAY['jan','fev','mars','avr','mai','juin','juil','aout','sep','oct','nov','dec'])[extract(month FROM created_at)::int]" +
+                "            || '-' || extract(year FROM created_at)::text" +
+                "        WHEN 'year'  THEN extract(year FROM created_at)::text" +
+                "    END AS periode_label," +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_entrees," +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties," +
+                " FROM public.mouvement" +
+                " WHERE is_deleted IS NOT TRUE" +
+                "  AND created_at BETWEEN " + dateDebut + " AND "+ dateFin +
+                " GROUP BY periode_tri, periode_label" +
+                " ORDER BY periode_tri; ";
+        jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(querry);
+        for (Map.Entry<String, Object> entry : param.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        List<Object[]> datas = query.getResultList();
+        if (datas != null) {
+            for (Object[] data : datas) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("periode_tri", data[0]);
+                map.put("periode_label", data[1]);
+                map.put("nb_entrees", data[2]);
+                map.put("nb_sorties", data[3]);
+                mapListFinal.add(map);
+            }
+        }
+        return  mapListFinal;
+    }
 
     /**
      * Finds List of Mouvement by using mouvementDto as a search criteria.

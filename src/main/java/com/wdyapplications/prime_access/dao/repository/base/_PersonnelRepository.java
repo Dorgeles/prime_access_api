@@ -173,7 +173,6 @@ public interface _PersonnelRepository {
     List<Personnel> findByStatusId(@Param("statusId")Integer statusId, @Param("isDeleted")Boolean isDeleted);
 
 
-
     /**
      * Finds List of Personnel by using personnelDto as a search criteria.
      *

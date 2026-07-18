@@ -9,8 +9,11 @@
 
 package com.wdyapplications.prime_access.rest.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.CannotCreateTransactionException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,12 +45,14 @@ Controller for table "mouvement"
 @RestController
 @RequestMapping(value="/mouvement")
 public class MouvementController {
-
+    @Autowired
+    private FunctionalError functionalError;
 	@Autowired
     private ControllerFactory<MouvementDto> controllerFactory;
 	@Autowired
 	private MouvementBusiness mouvementBusiness;
-
+    @Autowired
+    private HttpServletRequest requestBasic;
 	@RequestMapping(value="/create",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
     public Response<MouvementDto> create(@RequestBody Request<MouvementDto> request) {
     	// System.out.println("start method /mouvement/create");
@@ -69,6 +74,21 @@ public class MouvementController {
         // System.out.println("start method /mouvement/update");
         Response<Map<String, Object>> response = mouvementBusiness.nbMouvement(request, Locale.FRENCH);
         // System.out.println("end method /mouvement/update");
+        return response;
+    }
+    @RequestMapping(value = "/nbInOutByGranularite", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    public Response<Map<String, Object>> nbInOutByGranularite(@RequestBody Request<MouvementDto> request) {
+        // System.out.println("start method /serviceOrder/nbSoByState");
+        Response<Map<String, Object>> response =  mouvementBusiness.nbInOutByGranularite(request, Locale.FRENCH);
+        // System.out.println("end method /serviceOrder/nbSoByState");
+        return response;
+    }
+
+    @RequestMapping(value = "/nbInOutToDay", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    public Response<Map<String, Object>> nbInOutToDay(@RequestBody Request<MouvementDto> request) {
+        // System.out.println("start method /serviceOrder/nbSoByState");
+        Response<Map<String, Object>> response =  mouvementBusiness.nbInOutToDay(request, Locale.FRENCH);
+        // System.out.println("end method /serviceOrder/nbSoByState");
         return response;
     }
 
