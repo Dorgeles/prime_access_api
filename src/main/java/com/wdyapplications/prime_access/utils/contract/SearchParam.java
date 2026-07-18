@@ -8,6 +8,7 @@
 package com.wdyapplications.prime_access.utils.contract;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
  */
 
 @Data
+@NoArgsConstructor
 public class SearchParam<T> {
 	String  operator;
     T       start;
