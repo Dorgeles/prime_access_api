@@ -2,6 +2,7 @@
 package com.wdyapplications.prime_access.dao.repository.base;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -239,13 +240,20 @@ public interface _MouvementRepository {
         final MouvementDto dto = request.getData();
         List<Map<String, Object>> mapListFinal = new ArrayList<>();
 
-        String dateDebut ="'"+ dto.getCreatedAtParam().getStart() + "'";
-        String dateFin ="'"+ dto.getCreatedAtParam().getEnd() + "'";
-        String granularite = "'"+ dto.getGranularite() +"'";
+        if (dto == null || dto.getCreatedAtParam() == null || dto.getCreatedAtParam().getStart() == null || dto.getCreatedAtParam().getEnd() == null) {
+            throw new IllegalArgumentException("createdAtParam.start and createdAtParam.end are required");
+        }
+
+        Timestamp dateDebut = Utilities.asTimestamp(dto.getCreatedAtParam().getStart().toString());
+        Timestamp dateFin = Utilities.asTimestamp(dto.getCreatedAtParam().getEnd().toString());
+        String granularite = dto.getGranularite();
         HashMap<String, Object> param = new HashMap<>();
+        param.put("granularite", granularite);
+        param.put("dateDebut", dateDebut);
+        param.put("dateFin", dateFin);
         String querry = " SELECT " +
-                "    date_trunc( "+ granularite +", created_at) AS periode_tri, " +
-                "    CASE  " + granularite +
+                "    date_trunc(:granularite, created_at) AS periode_tri, " +
+                "    CASE  :granularite " +
                 "        WHEN 'hour'  THEN to_char(created_at, 'DD/MM/YYYY HH24\"h\"')" +
                 "        WHEN 'day'   THEN to_char(created_at, 'DD/MM/YYYY')" +
                 "        WHEN 'week'  THEN 'S' || to_char(created_at, 'IW') || '-' || to_char(created_at, 'IYYY')" +
@@ -258,7 +266,7 @@ public interface _MouvementRepository {
                 "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties " +
                 " FROM public.mouvement" +
                 " WHERE is_deleted IS NOT TRUE" +
-                "  AND created_at BETWEEN " + dateDebut + " AND "+ dateFin +
+                "  AND created_at BETWEEN :dateDebut AND :dateFin" +
                 " GROUP BY periode_tri, periode_label" +
                 " ORDER BY periode_tri; ";
         jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(querry);

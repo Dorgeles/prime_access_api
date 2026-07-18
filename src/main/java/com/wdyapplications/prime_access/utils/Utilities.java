@@ -25,6 +25,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -146,6 +147,39 @@ public class Utilities {
 	public static Date asDate(LocalDate localDate) {
 		return Date.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
 	}
+
+	public static Date parseDateTime(String dateTime) throws ParseException {
+		if (!notBlank(dateTime)) {
+			return null;
+		}
+
+		String[] patterns = {
+				"dd/MM/yyyy HH:mm:ss",
+				"dd-MM-yyyy HH:mm:ss",
+				"yyyy-MM-dd HH:mm:ss",
+				"yyyy-MM-dd'T'HH:mm:ss",
+				"dd/MM/yyyy",
+				"dd-MM-yyyy",
+				"yyyy-MM-dd"
+		};
+		ParseException lastError = null;
+		for (String pattern : patterns) {
+			try {
+				SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+				formatter.setLenient(false);
+				return formatter.parse(dateTime);
+			} catch (ParseException e) {
+				lastError = e;
+			}
+		}
+		throw lastError != null ? lastError : new ParseException("Unparseable date: " + dateTime, 0);
+	}
+
+	public static Timestamp asTimestamp(String dateTime) throws ParseException {
+		Date parsedDate = parseDateTime(dateTime);
+		return parsedDate == null ? null : new Timestamp(parsedDate.getTime());
+	}
+
 	public static <T> boolean isEmpty(List<T> list) {
 		return (list == null || list.isEmpty());
 	}
