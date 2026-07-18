@@ -488,6 +488,8 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 	 */
 	private MouvementDto getFullInfos(MouvementDto dto, Integer size, Boolean isSimpleLoading, Locale locale) throws Exception {
 		// put code here
+		dto.setDataPersonnel(dto.getPersonnelId() != null && dto.getPersonnelId() > 0? PersonnelTransformer.INSTANCE.toDto(personnelRepository.findOne(dto.getPersonnelId(), false)) : null);
+		dto.setDataSalle(dto.getSalleId() != null && dto.getSalleId() > 0? SalleTransformer.INSTANCE.toLiteDto(salleRepository.findOne(dto.getSalleId(), false)) : null);
 
 		if (Utilities.isTrue(isSimpleLoading)) {
 			return dto;

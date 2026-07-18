@@ -87,13 +87,13 @@ public class Mouvement implements Serializable, Cloneable {
     // ENTITY LINKS ( RELATIONSHIP )
     //----------------------------------------------------------------------
     @ManyToOne
-    @JoinColumn(name="personnel_id", referencedColumnName="id")
+    @JoinColumn(name="agent_securite_id", referencedColumnName="id")
     private Personnel personnel2  ;
     @ManyToOne
     @JoinColumn(name="salle_id", referencedColumnName="id")
     private Salle salle       ;
     @ManyToOne
-    @JoinColumn(name="agent_securite_id", referencedColumnName="id")
+    @JoinColumn(name="personnel_id", referencedColumnName="id")
     private Personnel personnel   ;
 
     //----------------------------------------------------------------------

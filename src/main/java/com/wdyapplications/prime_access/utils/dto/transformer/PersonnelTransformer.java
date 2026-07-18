@@ -54,6 +54,7 @@ public interface PersonnelTransformer {
 		dto.setId( entity.getId() );
 		dto.setNom( entity.getNom() );
 		dto.setPrenoms( entity.getPrenoms() );
+		dto.setImageUrl( entity.getImageUrl() );
 		return dto;
     }
 

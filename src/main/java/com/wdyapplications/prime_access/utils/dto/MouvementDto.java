@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
-
+import com.wdyapplications.prime_access.dao.entity.Salle;
 import com.wdyapplications.prime_access.utils.contract.*;
 import com.wdyapplications.prime_access.utils.dto.base._MouvementDto;
 import lombok.Data;
@@ -36,6 +36,8 @@ public class MouvementDto extends _MouvementDto{
 	private String    dateDebut               ;
 	private String    dateFin               ;
 	private String    granularite               ;
+	private PersonnelDto dataPersonnel;
+	private SalleDto dataSalle;
 
 	//----------------------------------------------------------------------
     // clone METHOD

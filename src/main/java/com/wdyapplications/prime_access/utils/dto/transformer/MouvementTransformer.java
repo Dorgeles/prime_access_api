@@ -43,7 +43,7 @@ public interface MouvementTransformer {
 		@Mapping(source="entity.validationDate", dateFormat="YYYY-MM-dd HH:mm:ss",target="validationDate"),
 		@Mapping(source="entity.salle.id", target="salleId"),
 		@Mapping(source="entity.salle.libelle", target="salleLibelle"),
-		@Mapping(source="entity.personnel.id", target="agentSecuriteId"),
+		@Mapping(source="entity.personnel.id", target="personnelId"),
 		@Mapping(source="entity.personnel.nom", target="personnelNom"),
 		@Mapping(source="entity.personnel.prenoms", target="personnelPrenoms"),
 	})
