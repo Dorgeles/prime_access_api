@@ -255,7 +255,7 @@ public interface _MouvementRepository {
                 "        WHEN 'year'  THEN extract(year FROM created_at)::text" +
                 "    END AS periode_label," +
                 "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_entrees," +
-                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties," +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties " +
                 " FROM public.mouvement" +
                 " WHERE is_deleted IS NOT TRUE" +
                 "  AND created_at BETWEEN " + dateDebut + " AND "+ dateFin +
