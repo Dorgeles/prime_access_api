@@ -281,9 +281,14 @@ public interface _MouvementRepository {
         // Filtre optionnel sur les salles (remplace le filtre "specifications" de l'original)
         String salleFilter = " AND C.salle_id IN (" + 1 + ") ";
 
+        if (dto == null || dto.getCreatedAtParam() == null || dto.getCreatedAtParam().getStart() == null || dto.getCreatedAtParam().getEnd() == null) {
+            throw new IllegalArgumentException("createdAtParam.start and createdAtParam.end are required");
+        }
 
-        String dateDebut = "'" + dto.getCreatedAtParam().getStart() + "'";
-        String dateFin = "'" + dto.getCreatedAtParam().getEnd() + "'";
+        Timestamp dateDebut = Utilities.asTimestamp(dto.getCreatedAtParam().getStart().toString());
+        Timestamp dateFin = Utilities.asTimestamp(dto.getCreatedAtParam().getEnd().toString());
+        String granularite = dto.getGranularite();
+
 
         Comparator<LocalDateTime> comparatorHour = new Comparator<LocalDateTime>() {
             @Override
@@ -309,7 +314,8 @@ public interface _MouvementRepository {
 
         String req = "";
         HashMap<String, Object> param = new HashMap<>();
-
+        param.put("dateDebut", dateDebut);
+        param.put("dateFin", dateFin);
         if (dto.getGranularite().equals("hour")) {
             req = "SELECT " +
                     "    C.type_mouvement AS STATE," +
@@ -327,7 +333,7 @@ public interface _MouvementRepository {
                     "    C.is_deleted = false " +
                     "    AND C.type_mouvement IN ('Entrée','Sortie') " +
                     salleFilter +
-                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "    AND C.created_at BETWEEN :dateDebut AND :dateFin" +
                     "  GROUP BY " +
                     "    C.type_mouvement," +
                     "    date_trunc('hour', C.created_at), " +
@@ -350,7 +356,7 @@ public interface _MouvementRepository {
                     "    C.is_deleted = false " +
                     "    AND C.type_mouvement IN ('Entrée','Sortie') " +
                     salleFilter +
-                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "    AND C.created_at BETWEEN :dateDebut AND :dateFin" +
                     "  GROUP BY " +
                     "    C.type_mouvement," +
                     "    TO_CHAR(C.created_at, 'YYYY'), " +
@@ -368,7 +374,7 @@ public interface _MouvementRepository {
                     "    C.is_deleted = false " +
                     "    AND C.type_mouvement IN ('Entrée','Sortie') " +
                     salleFilter +
-                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "    AND C.created_at BETWEEN :dateDebut AND :dateFin" +
                     "  GROUP BY  " +
                     "    C.type_mouvement," +
                     "    DATE_TRUNC('year', C.created_at) " +
@@ -386,7 +392,7 @@ public interface _MouvementRepository {
                     "    C.is_deleted = false " +
                     "    AND C.type_mouvement IN ('Entrée','Sortie') " +
                     salleFilter +
-                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "    AND C.created_at BETWEEN :dateDebut AND :dateFin" +
                     "  GROUP BY  " +
                     "    C.type_mouvement," +
                     "    TO_CHAR(C.created_at, 'YYYY'), " +
@@ -408,7 +414,7 @@ public interface _MouvementRepository {
                     "    C.is_deleted = false " +
                     "    AND C.type_mouvement IN ('Entrée','Sortie') " +
                     salleFilter +
-                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "    AND C.created_at BETWEEN :dateDebut AND :dateFin" +
                     "GROUP BY " +
                     "    C.type_mouvement, " +
                     "    DATE(C.created_at), " +
