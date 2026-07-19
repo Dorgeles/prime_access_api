@@ -105,7 +105,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			// Verify if personnel2 exist
 			Personnel existingPersonnel2 = null;
 			if (dto.getPersonnelId() != null && dto.getPersonnelId() > 0){
-				existingPersonnel2 = personnel2Repository.findOne(dto.getPersonnelId(), false);
+				existingPersonnel2 = personnelRepository.findOne(dto.getPersonnelId(), false);
 				if (existingPersonnel2 == null) {
 					response.setStatus(functionalError.DATA_NOT_EXIST("personnel2 personnelId -> " + dto.getPersonnelId(), locale));
 					response.setHasError(true);
@@ -141,7 +141,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			);
 
 			Mouvement entityToSave = null;
-			entityToSave = MouvementTransformer.INSTANCE.toEntity(dto, existingPersonnel2, existingSalle, null);
+			entityToSave = MouvementTransformer.INSTANCE.toEntity(dto, null, existingSalle, existingPersonnel2);
 			entityToSave.setCreatedAt(Utilities.getCurrentDate());
 			entityToSave.setCreatedBy(request.getUser());
 			entityToSave.setIsDeleted(false);
@@ -150,7 +150,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			} else {
 				entityToSave.setStatusId(StatusEnum.EN_COURS);
 			}
-			entityToSave.setTypeMouvement(determinerTypeMouvement(entityToSave.getPersonnel2().getId(), mouvementRepository));
+			entityToSave.setTypeMouvement(determinerTypeMouvement(entityToSave.getPersonnel().getId(), mouvementRepository));
 			items.add(entityToSave);
 		}
 
