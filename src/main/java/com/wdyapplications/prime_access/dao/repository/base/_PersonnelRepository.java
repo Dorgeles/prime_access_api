@@ -248,7 +248,7 @@ public interface _PersonnelRepository {
             req += " and (" + mainReq + ") ";
         }
         req += othersReq;
-
+        req += " order by  e.id desc";
         //order
         
         return req;

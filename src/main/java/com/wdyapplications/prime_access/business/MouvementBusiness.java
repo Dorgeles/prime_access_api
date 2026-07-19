@@ -131,7 +131,8 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 				}
 			}
 			// vérification du fait que le mouvement soit dans un rayon de 50 mettres autour du site
-			Boolean isInPerimeter = Utilities.estDansRayon(
+            assert existingSalle != null;
+            Boolean isInPerimeter = Utilities.estDansRayon(
 					existingSalle.getSite().getLatitude().doubleValue(),
 					existingSalle.getSite().getLongitude().doubleValue(),
 					dto.getLatitude().doubleValue(),
@@ -189,6 +190,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		// System.out.println("----end create Mouvement-----");
 		return response;
 	}
+	//nbPersonnelPresent
 
 
 	public Response<Map<String, Object>> nbMouvement(Request<MouvementDto> request, Locale locale)  throws ParseException {
@@ -449,6 +451,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			}
 			response.setItems(items);
 			response.setHasError(false);
+			response.setStatus(functionalError.SUCCESS("données", locale));
 
 			// // System.out.println("----end nbDercoByStatus-----");
 		} catch (PermissionDeniedDataAccessException e) {
@@ -469,7 +472,47 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		}
 		return response;
 	}
+	//
+	public Response<Map<String, Object>> nbPersonnelPresent(Request<MouvementDto> request, Locale locale) {
+		//// System.out.println("----begin nbServiceByStatus-----");
 
+		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+
+		try {
+			List<Map<String, Object>> items = new ArrayList<>();
+
+			items = mouvementRepository.nbPersonnelPresent(request, em); // nbServiceOrderByStatus
+
+			if (items.isEmpty()) {
+				response.setStatus(functionalError.DATA_EMPTY("données", locale));
+				response.setHasError(false);
+				return response;
+			}
+			// Utilities.sortListByMapKey(items, "name", false);
+
+			response.setItems(items);
+			response.setHasError(false);
+			response.setStatus(functionalError.SUCCESS("données", locale));
+
+			// // System.out.println("----end nbDercoByStatus-----");
+		} catch (PermissionDeniedDataAccessException e) {
+			exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (DataAccessResourceFailureException e) {
+			exceptionUtils.DATA_ACCESS_RESOURCE_FAILURE_EXCEPTION(response, locale, e);
+		} catch (DataAccessException e) {
+			exceptionUtils.DATA_ACCESS_EXCEPTION(response, locale, e);
+		} catch (RuntimeException e) {
+			exceptionUtils.RUNTIME_EXCEPTION(response, locale, e);
+		} catch (Exception e) {
+			exceptionUtils.EXCEPTION(response, locale, e);
+		} finally {
+			if (response.isHasError() && response.getStatus() != null) {
+				// // System.out.println("Erreur| code: {} -  message: {}", response.getStatus().getCode(), response.getStatus().getMessage());
+				throw new RuntimeException(response.getStatus().getCode() + ";" + response.getStatus().getMessage());
+			}
+		}
+		return response;
+	}
 	public Response<Map<String, Object>> nbInOutByGranularite(Request<MouvementDto> request, Locale locale) {
 		//// System.out.println("----begin nbServiceByStatus-----");
 
@@ -499,7 +542,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 
 			response.setItems(items);
 			response.setHasError(false);
-
+			response.setStatus(functionalError.SUCCESS("données", locale));
 			// // System.out.println("----end nbDercoByStatus-----");
 		} catch (PermissionDeniedDataAccessException e) {
 			exceptionUtils.PERMISSION_DENIED_DATA_ACCESS_EXCEPTION(response, locale, e);
@@ -556,6 +599,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			}
 			response.setItems(itemsDto);
 			response.setCount(mouvementRepository.count(request, em, locale));
+			response.setStatus(functionalError.SUCCESS("données", locale));
 			response.setHasError(false);
 		} else {
 			response.setStatus(functionalError.DATA_EMPTY("mouvement", locale));

@@ -3,14 +3,13 @@ package com.wdyapplications.prime_access.dao.repository.base;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Locale;
+import java.util.stream.Collectors;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
@@ -208,14 +207,42 @@ public interface _MouvementRepository {
   @Query("select e from Mouvement e where e.personnel.id = :agentSecuriteId and e.isDeleted = :isDeleted")
   Mouvement findMouvementByAgentSecuriteId(@Param("agentSecuriteId")Integer agentSecuriteId, @Param("isDeleted")Boolean isDeleted);
 
+
+
+
+    default List<Map<String, Object>> nbPersonnelPresent(Request<MouvementDto> request, EntityManager em) throws ParseException {
+        final MouvementDto dto = request.getData();
+        List<Map<String, Object>> mapListFinal = new ArrayList<>();
+        Map<String, Object> mapFinal = new HashMap<>();
+        HashMap<String, Object> param = new HashMap<>();
+        String querry = " SELECT\n" +
+                "    COUNT(DISTINCT personnel_id) AS nb_personnes_distinctes\n" +
+                "    FROM public.mouvement\n" +
+                "    WHERE is_deleted IS NOT TRUE\n" +
+                "    AND status_id = 1\n" +
+                "    AND created_at >= date_trunc('day', now())\n" +
+                "    AND created_at <  date_trunc('day', now()) + interval '1 day';";
+        jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(querry);
+        for (Map.Entry<String, Object> entry : param.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+
+        List<Object[]> datas = query.getResultList();
+        if (!datas.isEmpty()) {
+            mapFinal.put("personnel_today_count", datas.get(0));
+        }
+        mapListFinal.add(mapFinal);
+        return mapListFinal;
+    }
+
     default List<Map<String, Object>> nbInOutToDay(Request<MouvementDto> request, EntityManager em) throws ParseException {
         final MouvementDto dto = request.getData();
         Map<String, Object> mapFinal = new HashMap<>();
         HashMap<String, Object> param = new HashMap<>();
         List<Map<String, Object>> mapListFinal = new ArrayList<>();
         String querry = "    SELECT" +
-                "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_entrees," +
-                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties " +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_Entrées," +
+                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_Sorties " +
                 "    FROM public.mouvement " +
                 "    WHERE is_deleted IS NOT TRUE" +
                 "    AND created_at >= date_trunc('day', now())" +
@@ -228,66 +255,293 @@ public interface _MouvementRepository {
         List<Object[]> datas = query.getResultList();
         if (!datas.isEmpty()) {
             Object[] data = datas.get(0);
-            mapFinal.put("nb_entrees", data[0]);
-            mapFinal.put("nb_sorties", data[1]);
+            mapFinal.put("nb_Entrées", data[0]);
+            mapFinal.put("nb_Sorties", data[1]);
         }
         mapListFinal.add(mapFinal);
         return mapListFinal;
     }
 
 
+    /**
+     * Adaptation de la méthode nbSoByState pour la table "mouvement".
+     *
+     * HYPOTHESES posées (à ajuster selon votre DTO réel) :
+     *  - MouvementDto expose : getPeriod() (hour|day|week|month|year),
+     *    getCreatedAtParam().getStart()/getEnd(), et getSalleIds() (List<Integer>)
+     *    pour filtrer sur des salles précises (remplace le filtre "specifications"
+     *    de l'exemple d'origine). Remplacez par getPersonnelIds() si le filtre
+     *    doit plutôt porter sur le personnel.
+     *  - "STATE" désigne désormais type_mouvement ('Entrée' / 'Sortie').
+     *  - is_deleted est un vrai bool -> comparaison "= false" (et non 'f').
+     */
     default List<Map<String, Object>> nbInOutByGranularite(Request<MouvementDto> request, EntityManager em) throws ParseException {
         final MouvementDto dto = request.getData();
-        List<Map<String, Object>> mapListFinal = new ArrayList<>();
 
-        if (dto == null || dto.getCreatedAtParam() == null || dto.getCreatedAtParam().getStart() == null || dto.getCreatedAtParam().getEnd() == null) {
-            throw new IllegalArgumentException("createdAtParam.start and createdAtParam.end are required");
+        // Filtre optionnel sur les salles (remplace le filtre "specifications" de l'original)
+        String salleFilter = " AND C.salle_id IN (" + 1 + ") ";
+
+
+        String dateDebut = "'" + dto.getCreatedAtParam().getStart() + "'";
+        String dateFin = "'" + dto.getCreatedAtParam().getEnd() + "'";
+
+        Comparator<LocalDateTime> comparatorHour = new Comparator<LocalDateTime>() {
+            @Override
+            public int compare(LocalDateTime date1, LocalDateTime date2) {
+                return date1.compareTo(date2);
+            }
+        };
+        Comparator<Integer> comparatorWeek = new Comparator<Integer>() {
+            @Override
+            public int compare(Integer date1, Integer date2) {
+                return date1.compareTo(date2);
+            }
+        };
+        Comparator<String> comparatorString = new Comparator<String>() {
+            @Override
+            public int compare(String week1, String week2) {
+                // Extraire les numéros des semaines après "S_"
+                Integer weekNumber1 = Integer.parseInt(week1.substring(2));
+                Integer weekNumber2 = Integer.parseInt(week2.substring(2));
+                return weekNumber1.compareTo(weekNumber2);
+            }
+        };
+
+        String req = "";
+        HashMap<String, Object> param = new HashMap<>();
+
+        if (dto.getGranularite().equals("hour")) {
+            req = "SELECT " +
+                    "    C.type_mouvement AS STATE," +
+                    "    TO_CHAR(date_trunc('hour', C.created_at), 'MM-DD') AS theDay," +
+                    "    TO_CHAR(date_trunc('hour', C.created_at), 'HH24') AS theHour," +
+                    "    CONCAT('S_', TO_CHAR(C.created_at, 'WW')) AS theWeek," +
+                    "    TO_CHAR(C.created_at, 'MM') AS moisString," +
+                    "    TO_CHAR(C.created_at, 'YYYY') AS annee," +
+                    "    TO_CHAR(C.created_at, 'YYYY-MM') AS theMois," +
+                    "    DATE(C.created_at) AS jourDate," +
+                    "    COUNT(C.id) AS nb " +
+                    "FROM" +
+                    "    mouvement C " +
+                    "WHERE " +
+                    "    C.is_deleted = false " +
+                    "    AND C.type_mouvement IN ('Entrée','Sortie') " +
+                    salleFilter +
+                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "  GROUP BY " +
+                    "    C.type_mouvement," +
+                    "    date_trunc('hour', C.created_at), " +
+                    "    TO_CHAR(C.created_at, 'WW'), " +
+                    "    TO_CHAR(C.created_at, 'MM'), " +
+                    "    TO_CHAR(C.created_at, 'YYYY'), " +
+                    "    TO_CHAR(C.created_at, 'YYYY-MM'), " +
+                    "    DATE(C.created_at) " +
+                    "ORDER BY " +
+                    "    date_trunc('hour', C.created_at) ASC;";
+        } else if (dto.getGranularite().equals("week")) {
+            req = "SELECT  " +
+                    "    C.type_mouvement AS STATE, " +
+                    "    TO_CHAR(DATE_TRUNC('week', C.created_at), '\"S_\"WW') AS theWeek, " +
+                    "    TO_CHAR(C.created_at, 'YYYY') AS annee, " +
+                    "    COUNT(C.id) AS nb " +
+                    "FROM  " +
+                    "    mouvement C " +
+                    "WHERE  " +
+                    "    C.is_deleted = false " +
+                    "    AND C.type_mouvement IN ('Entrée','Sortie') " +
+                    salleFilter +
+                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "  GROUP BY " +
+                    "    C.type_mouvement," +
+                    "    TO_CHAR(C.created_at, 'YYYY'), " +
+                    "    DATE_TRUNC('week', C.created_at) " +
+                    "ORDER BY  " +
+                    "    theWeek ASC;";
+        } else if (dto.getGranularite().equals("year")) {
+            req = "SELECT  " +
+                    "    C.type_mouvement AS STATE, " +
+                    "    TO_CHAR(DATE_TRUNC('year', C.created_at), 'YYYY') AS theYear, " +
+                    "    COUNT(C.id) AS nb " +
+                    " FROM  " +
+                    "    mouvement C " +
+                    "WHERE  " +
+                    "    C.is_deleted = false " +
+                    "    AND C.type_mouvement IN ('Entrée','Sortie') " +
+                    salleFilter +
+                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "  GROUP BY  " +
+                    "    C.type_mouvement," +
+                    "    DATE_TRUNC('year', C.created_at) " +
+                    "ORDER BY  " +
+                    "    theYear ASC;";
+        } else if (dto.getGranularite().equals("month")) {
+            req = "SELECT  " +
+                    "    C.type_mouvement AS STATE, " +
+                    "    TO_CHAR(DATE_TRUNC('month', C.created_at), 'YYYY-MM') AS theMonth, " +
+                    "    TO_CHAR(C.created_at, 'YYYY') AS annee, " +
+                    "    COUNT(C.id) AS nb " +
+                    "FROM  " +
+                    "    mouvement C " +
+                    "WHERE  " +
+                    "    C.is_deleted = false " +
+                    "    AND C.type_mouvement IN ('Entrée','Sortie') " +
+                    salleFilter +
+                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "  GROUP BY  " +
+                    "    C.type_mouvement," +
+                    "    TO_CHAR(C.created_at, 'YYYY'), " +
+                    "    DATE_TRUNC('month', C.created_at) " +
+                    "ORDER BY  " +
+                    "    theMonth ASC;";
+        } else {
+            // day (défaut)
+            req = "SELECT  " +
+                    "    C.type_mouvement AS STATE, " +
+                    "    DATE(C.created_at) AS jourDate, " +
+                    "    CONCAT('S_', TO_CHAR(C.created_at, 'WW')) AS theWeek, " +
+                    "    TO_CHAR(C.created_at, 'YYYY-MM') AS theMois, " +
+                    "    TO_CHAR(C.created_at, 'YYYY') AS annee, " +
+                    "    COUNT(C.id) AS nb " +
+                    "FROM " +
+                    "    mouvement C " +
+                    "WHERE " +
+                    "    C.is_deleted = false " +
+                    "    AND C.type_mouvement IN ('Entrée','Sortie') " +
+                    salleFilter +
+                    "    AND C.created_at BETWEEN " + dateDebut + " AND " + dateFin +
+                    "GROUP BY " +
+                    "    C.type_mouvement, " +
+                    "    DATE(C.created_at), " +
+                    "    TO_CHAR(C.created_at, 'WW'), " +
+                    "    TO_CHAR(C.created_at, 'YYYY-MM'), " +
+                    "    TO_CHAR(C.created_at, 'YYYY') " +
+                    "ORDER BY " +
+                    "    annee ASC, " +
+                    "    theMois ASC, " +
+                    "    theWeek ASC, " +
+                    "    jourDate ASC;";
         }
 
-        Timestamp dateDebut = Utilities.asTimestamp(dto.getCreatedAtParam().getStart().toString());
-        Timestamp dateFin = Utilities.asTimestamp(dto.getCreatedAtParam().getEnd().toString());
-        String granularite = dto.getGranularite();
-        HashMap<String, Object> param = new HashMap<>();
-        param.put("granularite", granularite);
-        param.put("dateDebut", dateDebut);
-        param.put("dateFin", dateFin);
-        String querry = " SELECT " +
-                "    date_trunc(:granularite, created_at) AS periode_tri, " +
-                "    CASE  :granularite " +
-                "        WHEN 'hour'  THEN to_char(created_at, 'DD/MM/YYYY HH24\"h\"')" +
-                "        WHEN 'day'   THEN to_char(created_at, 'DD/MM/YYYY')" +
-                "        WHEN 'week'  THEN 'S' || to_char(created_at, 'IW') || '-' || to_char(created_at, 'IYYY')" +
-                "        WHEN 'month' THEN" +
-                "            (ARRAY['jan','fev','mars','avr','mai','juin','juil','aout','sep','oct','nov','dec'])[extract(month FROM created_at)::int]" +
-                "            || '-' || extract(year FROM created_at)::text" +
-                "        WHEN 'year'  THEN extract(year FROM created_at)::text" +
-                "    END AS periode_label," +
-                "    COUNT(*) FILTER (WHERE type_mouvement = 'Entrée') AS nb_entrees," +
-                "    COUNT(*) FILTER (WHERE type_mouvement = 'Sortie') AS nb_sorties " +
-                " FROM public.mouvement" +
-                " WHERE is_deleted IS NOT TRUE" +
-                "  AND created_at BETWEEN :dateDebut AND :dateFin" +
-                " GROUP BY periode_tri, periode_label" +
-                " ORDER BY periode_tri; ";
-        jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(querry);
+        System.out.println(req);
+        jakarta.persistence.TypedQuery<Object[]> query = (TypedQuery<Object[]>) em.createNativeQuery(req);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }
 
         List<Object[]> datas = query.getResultList();
-        if (datas != null) {
-            for (Object[] data : datas) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("periode_tri", data[0]);
-                map.put("periode_label", data[1]);
-                map.put("nb_entrees", data[2]);
-                map.put("nb_sorties", data[3]);
-                mapListFinal.add(map);
-            }
-        }
-        return  mapListFinal;
-    }
+        List<Map<String, Object>> mapList = new ArrayList<>();
+        List<Map<String, Object>> mapListFinal = new ArrayList<>();
+        datas.forEach(item -> {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH");
+            DateTimeFormatter formatterDay = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            if (dto.getGranularite().equals("day")) {
+                map.putIfAbsent("annee", item[4]);
+                map.putIfAbsent("state", item[0]);
+                map.putIfAbsent("total", item[5]);
+                map.putIfAbsent("date", item[1]);
+                map.putIfAbsent("normalDate", LocalDateTime.parse(item[1].toString() + " " + "00", formatter));
+            }
+            if (dto.getGranularite().equals("week")) {
+                map.putIfAbsent("annee", item[2]);
+                map.putIfAbsent("state", item[0]);
+                map.putIfAbsent("total", item[3]);
+                map.putIfAbsent("date", item[1].toString());
+                map.putIfAbsent("normalDate", item[1].toString());
+            }
+            if (dto.getGranularite().equals("month")) {
+                map.putIfAbsent("annee", item[2]);
+                map.putIfAbsent("state", item[0]);
+                map.putIfAbsent("total", item[3]);
+                map.putIfAbsent("date", item[1].toString());
+                map.putIfAbsent("normalDate", Integer.parseInt(item[1].toString().replaceAll("-", "")));
+            }
+            if (dto.getGranularite().equals("year")) {
+                map.putIfAbsent("annee", item[1]);
+                map.putIfAbsent("state", item[0]);
+                map.putIfAbsent("total", item[2]);
+                map.putIfAbsent("date", item[1].toString());
+                map.putIfAbsent("normalDate", Integer.parseInt(item[1].toString().replaceAll("-", "")));
+            }
+            if (dto.getGranularite().equals("hour")) {
+                map.putIfAbsent("annee", item[5]);
+                map.putIfAbsent("state", item[0]);
+                map.putIfAbsent("total", item[8]);
+                map.putIfAbsent("date", item[7] + " " + item[2].toString() + "H");
+                map.putIfAbsent("normalDate", LocalDateTime.parse(item[7].toString() + " " + item[2].toString(), formatter));
+            }
+            mapList.add(map);
+        });
+
+        Map<Object, List<Map<String, Object>>> groupedMap = mapList.stream()
+                .collect(Collectors.groupingBy(map -> map.get("normalDate")));
+
+        if (dto.getGranularite().equals("hour") || dto.getGranularite().equals("day")) {
+            TreeMap<LocalDateTime, List<Map<String, Object>>> sortedMap = new TreeMap<>(comparatorHour);
+            sortedMap.putAll((HashMap) groupedMap);
+            sortedMap.forEach((key, value) -> {
+                Map<String, Object> map = new HashMap<String, Object>();
+                int total = 0;
+                for (int i = 0; i < value.size(); i++) {
+                    total = total + Integer.parseInt(value.get(i).get("total").toString());
+                }
+                map.putIfAbsent("total", total);
+                map.putIfAbsent("date", value.get(0).get("date"));
+                map.putIfAbsent("annee", value.get(0).get("annee"));
+                map.putIfAbsent("data", value);
+                mapListFinal.add(map);
+            });
+        } else if (dto.getGranularite().equals("month") || dto.getGranularite().equals("year")) {
+            TreeMap<Integer, List<Map<String, Object>>> sortedMap = new TreeMap<>(comparatorWeek);
+            sortedMap.putAll((HashMap) groupedMap);
+            sortedMap.forEach((key, value) -> {
+                Map<String, Object> map = new HashMap<String, Object>();
+                int total = 0;
+                for (int i = 0; i < value.size(); i++) {
+                    total = total + Integer.parseInt(value.get(i).get("total").toString());
+                }
+                map.putIfAbsent("total", total);
+                map.putIfAbsent("date", value.get(0).get("date"));
+                map.putIfAbsent("annee", value.get(0).get("annee"));
+                map.putIfAbsent("data", value);
+                mapListFinal.add(map);
+            });
+        } else if (dto.getGranularite().equals("week")) {
+            TreeMap<String, List<Map<String, Object>>> sortedMap = new TreeMap<>(comparatorString);
+            sortedMap.putAll((HashMap) groupedMap);
+            sortedMap.forEach((key, value) -> {
+                Map<String, Object> map = new HashMap<String, Object>();
+                int total = 0;
+                for (int i = 0; i < value.size(); i++) {
+                    total = total + Integer.parseInt(value.get(i).get("total").toString());
+                }
+                map.putIfAbsent("total", total);
+                map.putIfAbsent("date", value.get(0).get("date"));
+                map.putIfAbsent("annee", value.get(0).get("annee"));
+                map.putIfAbsent("data", value);
+                mapListFinal.add(map);
+            });
+        } else {
+            TreeMap<Date, List<Map<String, Object>>> sortedMap = new TreeMap<>(Date::compareTo);
+            sortedMap.putAll((HashMap) groupedMap);
+            groupedMap.forEach((key, value) -> {
+                Map<String, Object> map = new HashMap<String, Object>();
+                int total = 0;
+                for (int i = 0; i < value.size(); i++) {
+                    total = total + Integer.parseInt(value.get(i).get("total").toString());
+                }
+                map.putIfAbsent("total", total);
+                map.putIfAbsent("date", value.get(0).get("date"));
+                map.putIfAbsent("annee", value.get(0).get("annee"));
+                map.putIfAbsent("data", value);
+                mapListFinal.add(map);
+            });
+        }
+
+        return mapListFinal;
+    }
     /**
      * Finds List of Mouvement by using mouvementDto as a search criteria.
      *
@@ -363,7 +617,7 @@ public interface _MouvementRepository {
             req += " and (" + mainReq + ") ";
         }
         req += othersReq;
-
+        req += " order by  e.id desc";
         //order
         
         return req;

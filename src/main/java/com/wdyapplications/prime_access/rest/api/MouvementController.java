@@ -91,6 +91,14 @@ public class MouvementController {
         // System.out.println("end method /serviceOrder/nbSoByState");
         return response;
     }
+    //nbPersonnelPresent
+    @RequestMapping(value = "/nbPersonnelPresent", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    public Response<Map<String, Object>> nbPersonnelPresent(@RequestBody Request<MouvementDto> request) {
+        // System.out.println("start method /serviceOrder/nbSoByState");
+        Response<Map<String, Object>> response =  mouvementBusiness.nbPersonnelPresent(request, Locale.FRENCH);
+        // System.out.println("end method /serviceOrder/nbSoByState");
+        return response;
+    }
 
 	@RequestMapping(value="/delete",method=RequestMethod.POST,consumes = {"application/json"},produces={"application/json"})
     public Response<MouvementDto> delete(@RequestBody Request<MouvementDto> request) {
