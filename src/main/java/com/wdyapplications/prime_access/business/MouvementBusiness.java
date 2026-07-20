@@ -137,7 +137,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 					existingSalle.getSite().getLongitude().doubleValue(),
 					dto.getLatitude().doubleValue(),
 					dto.getLongitude().doubleValue(),
-					50
+					700
 			);
 
 			Mouvement entityToSave = null;
