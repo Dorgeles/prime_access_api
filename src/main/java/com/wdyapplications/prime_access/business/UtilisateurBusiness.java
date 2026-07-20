@@ -168,7 +168,7 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
             for (Utilisateur saved : itemsSaved) {
                 Map<String, Object> newData = new HashMap<>();
                 newData.put("sender", "noreply@wdyapplications");
-                newData.put("template", "NEW_USER");
+                newData.put("template", "welcome-email");
                 eventPublisher.publishEvent(new UtilisateurEmailNotification(
                         saved,
                         newData
