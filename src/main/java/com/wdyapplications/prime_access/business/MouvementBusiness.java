@@ -243,8 +243,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 
 	public String determinerTypeMouvement(int idPersonnel, MouvementRepository repo) {
 		Optional<Mouvement> dernier = repo.findDernierMouvement(idPersonnel);
-
-		if (dernier.isEmpty() || dernier.get().getTypeMouvement() == TypeMouvement.SORTIR) {
+		if (dernier.isEmpty() || Objects.equals(dernier.get().getTypeMouvement(), TypeMouvement.SORTIR)) {
 			return TypeMouvement.ENTRER;
 		}
 		return TypeMouvement.SORTIR;

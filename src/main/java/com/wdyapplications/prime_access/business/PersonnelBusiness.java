@@ -240,6 +240,20 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
             if (Utilities.notBlank(dto.getFonction())) {
                 entityToSave.setFonction(dto.getFonction());
             }
+            if (Utilities.isNotEmpty(dto.getImages())) {
+                StringBuilder listUrl = new StringBuilder();
+                for (ImageDto image : dto.getImages()) {
+                    try {
+                        image.setFilename(UUID.randomUUID().toString() + ".png");
+                        String imageUrl = minioExternalService.saveImage(image);
+                        listUrl.append(imageUrl).append(";");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                listUrl.deleteCharAt(listUrl.length() - 1);
+                dto.setImageUrl(listUrl.toString());
+            }
             if (Utilities.notBlank(dto.getContractant())) {
                 entityToSave.setContractant(dto.getContractant());
             }
