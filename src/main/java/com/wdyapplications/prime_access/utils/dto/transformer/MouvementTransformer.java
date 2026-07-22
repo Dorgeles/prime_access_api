@@ -46,6 +46,7 @@ public interface MouvementTransformer {
 		@Mapping(source="entity.personnel.id", target="personnelId"),
 		@Mapping(source="entity.personnel.nom", target="personnelNom"),
 		@Mapping(source="entity.personnel.prenoms", target="personnelPrenoms"),
+		@Mapping(source="entity.personnel2.id", target="agentSecuriteId"),
 	})
 	MouvementDto toDto(Mouvement entity) throws ParseException;
 

@@ -29,6 +29,7 @@ public class StatusEnum {
 	public static final int PLANIFIER			=	10;
 	public static final int VALIDER 			=   13;
 	public static final int REFUSER 			=   14;
+	public static final int HORS_SITE 			=   15;
 
 	
 }

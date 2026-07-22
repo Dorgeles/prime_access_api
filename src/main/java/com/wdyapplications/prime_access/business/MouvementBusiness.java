@@ -146,7 +146,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			entityToSave.setCreatedBy(request.getUser());
 			entityToSave.setIsDeleted(false);
 			if(!isInPerimeter) {
-				entityToSave.setStatusId(StatusEnum.REFUSER);
+				entityToSave.setStatusId(StatusEnum.HORS_SITE);
 			} else {
 				entityToSave.setStatusId(StatusEnum.EN_COURS);
 			}
@@ -310,7 +310,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 					response.setHasError(true);
 					return response;
 				}
-				entityToSave.setPersonnel(existingPersonnel);
+				entityToSave.setPersonnel2(existingPersonnel);
 			}
 			if (Utilities.notBlank(dto.getTypeMouvement())) {
 				entityToSave.setTypeMouvement(dto.getTypeMouvement());
