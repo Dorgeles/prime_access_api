@@ -33,7 +33,9 @@ import com.wdyapplications.prime_access.dao.repository.base._MouvementRepository
  */
 @Repository
 public interface MouvementRepository extends JpaRepository<Mouvement, Integer>, _MouvementRepository {
-    @Query("SELECT m FROM Mouvement m WHERE m.personnel.id = :idPersonnel " +
+    @Query("SELECT m FROM Mouvement m " +
+            "WHERE m.personnel.id = :idPersonnel " +
+            "AND FUNCTION('DATE', m.createdAt) = CURRENT_DATE " +
             "ORDER BY m.createdAt DESC LIMIT 1")
     Optional<Mouvement> findDernierMouvement(@Param("idPersonnel") Integer idPersonnel);
 
