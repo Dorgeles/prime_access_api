@@ -156,10 +156,14 @@ public interface _SettingRepository {
      *
      */
     public default Long count(Request<SettingDto> request, EntityManager em, Locale locale) throws DataAccessException, Exception  {
-        String whereClause = "select e.id from Setting e where e IS NOT NULL";
         HashMap<String, Object> param = new HashMap<String, Object>();
-        // ✅ Wrapper pour ignorer le group by / order by générés
-        String req = "select count(e.id) from Setting e where e.id IN (" + whereClause + ")";
+        String req = "select count(distinct e.id) from Setting e ";
+        req += " where e IS NOT NULL ";
+
+        String whereExpr = getWhereExpression(request, param, locale);
+        // Remove ORDER BY clause from count queries (aggregate function cannot have ORDER BY without GROUP BY)
+        whereExpr = whereExpr.replaceAll("\\s+order by\\s+.*", "");
+        req += whereExpr;
         jakarta.persistence.Query query = em.createQuery(req);
         for (Map.Entry<String, Object> entry : param.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());

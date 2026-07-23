@@ -107,6 +107,7 @@ public class UtilisateurBusiness implements IBasicBusiness<Request<UtilisateurDt
                 response.setHasError(true);
                 return response;
             }
+            dto.setLogin(dto.getLogin().trim());
             List<String> fonctions = List.of(settingRegistry.findByCode("roles").toString().split(";"));
             if (Utilities.isEmpty(fonctions) || fonctions.contains(dto.getRole()) == false) {
                 response.setStatus(functionalError.DATA_EXIST("utilisateur.role", locale));
