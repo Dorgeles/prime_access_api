@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Gatherer;
 
 import com.wdyapplications.prime_access.utils.*;
 import com.wdyapplications.prime_access.utils.dto.*;
@@ -307,6 +308,46 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
         }
 
         // System.out.println("----end update Personnel-----");
+        return response;
+    }
+    public Response<PersonnelDto> findPersonnelAbsentToDay(Request<PersonnelDto> request, Locale locale) throws ParseException {
+        Response<PersonnelDto> response = new Response<PersonnelDto>();
+        List<Personnel> items = new ArrayList<Personnel>();
+        List<Personnel> allpersonnels = personnelRepository.findAll();
+        items = personnelRepository.findPersonnelPresentToDay();
+        if (Utilities.isEmpty(items)) {
+            response.setStatus(functionalError.DATA_EMPTY("personnel", locale));
+            response.setHasError(false);
+            response.setItems(PersonnelTransformer.INSTANCE.toDtos(allpersonnels));
+            response.setCount((long) allpersonnels.size());
+            return response;
+        }
+        List<Personnel>   finalList = allpersonnels.removeAll(items) ? allpersonnels : Collections.emptyList();
+        List<PersonnelDto> itemsDto = (Utilities.isTrue(request.getIsSimpleLoading())) ? PersonnelTransformer.INSTANCE.toLiteDtos(finalList) : PersonnelTransformer.INSTANCE.toDtos(finalList);
+        response.setStatus(functionalError.SUCCESS("personnel", locale));
+        response.setHasError(false);
+        response.setItems(itemsDto);
+        response.setCount((long) itemsDto.size());
+        return response;
+    }
+
+    public Response<PersonnelDto> findPersonnelPresentToDay(Request<PersonnelDto> request, Locale locale) throws ParseException {
+        Response<PersonnelDto> response = new Response<PersonnelDto>();
+        List<Personnel> items = new ArrayList<Personnel>();
+        items = personnelRepository.findPersonnelPresentToDay();
+        if (Utilities.isEmpty(items)) {
+            response.setStatus(functionalError.DATA_EMPTY("personnel", locale));
+            response.setHasError(false);
+            response.setItems(Collections.emptyList());
+            response.setCount(0L);
+            return response;
+        }
+        List<PersonnelDto> itemsDto = (Utilities.isTrue(request.getIsSimpleLoading())) ? PersonnelTransformer.INSTANCE.toLiteDtos(items) : PersonnelTransformer.INSTANCE.toDtos(items);
+
+        response.setStatus(functionalError.SUCCESS("personnel", locale));
+        response.setHasError(false);
+        response.setItems(itemsDto);
+        response.setCount((long) itemsDto.size());
         return response;
     }
 

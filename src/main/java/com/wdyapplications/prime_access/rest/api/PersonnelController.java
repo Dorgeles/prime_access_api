@@ -26,6 +26,7 @@ import com.wdyapplications.prime_access.utils.enums.FunctionalityEnum;
 import com.wdyapplications.prime_access.business.*;
 import com.wdyapplications.prime_access.rest.fact.ControllerFactory;
 
+import java.text.ParseException;
 import java.util.Locale;
 import java.util.Map;
 
@@ -58,6 +59,21 @@ public class PersonnelController {
     public Response<Map<String, Object>> nbInOutToDay(@RequestBody Request<PersonnelDto> request) {
         // System.out.println("start method /serviceOrder/nbSoByState");
         Response<Map<String, Object>> response =  personnelBusiness.countPersonnel(request, Locale.FRENCH);
+        // System.out.println("end method /serviceOrder/nbSoByState");
+        return response;
+    }
+
+    @RequestMapping(value = "/findPersonnelPresentToDay", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    public Response<PersonnelDto> findPersonnelPresentToDay(@RequestBody Request<PersonnelDto> request) throws ParseException {
+        // System.out.println("start method /serviceOrder/nbSoByState");
+        Response<PersonnelDto> response =  personnelBusiness.findPersonnelPresentToDay(request, Locale.FRENCH);
+        // System.out.println("end method /serviceOrder/nbSoByState");
+        return response;
+    }
+    @RequestMapping(value = "/findPersonnelAbsentToDay", method = RequestMethod.POST, consumes = {"application/json"}, produces = {"application/json"})
+    public Response<PersonnelDto> findPersonnelAbsentToDay(@RequestBody Request<PersonnelDto> request) throws ParseException {
+        // System.out.println("start method /serviceOrder/nbSoByState");
+        Response<PersonnelDto> response =  personnelBusiness.findPersonnelAbsentToDay(request, Locale.FRENCH);
         // System.out.println("end method /serviceOrder/nbSoByState");
         return response;
     }

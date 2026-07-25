@@ -189,8 +189,7 @@ public interface _UtilisateurRepository {
      */
     public default Long count(Request<UtilisateurDto> request, EntityManager em, Locale locale) throws DataAccessException, Exception  {
         HashMap<String, Object> param = new HashMap<String, Object>();
-        String req = "select count(distinct e.id) from Utilisateur e ";
-        req += " where e IS NOT NULL ";
+        String req = "select count(distinct e.id) from Utilisateur e where e IS NOT NULL ";
 
         String whereExpr = getWhereExpression(request, param, locale);
         // Remove ORDER BY clause from count queries (aggregate function cannot have ORDER BY without GROUP BY)

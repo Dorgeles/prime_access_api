@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Locale;
 
+import com.wdyapplications.prime_access.dao.entity.Personnel;
 import com.wdyapplications.prime_access.dao.entity.Utilisateur;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -36,5 +37,4 @@ import com.wdyapplications.prime_access.dao.repository.base._UtilisateurReposito
  */
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur, Integer>, _UtilisateurRepository {
-
 }
