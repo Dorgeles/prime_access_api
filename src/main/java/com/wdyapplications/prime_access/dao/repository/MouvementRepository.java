@@ -53,4 +53,27 @@ public interface MouvementRepository extends JpaRepository<Mouvement, Integer>, 
             @Param("debut") LocalDateTime debut,
             @Param("fin") LocalDateTime fin
     );
+
+    /**
+     * Tous les mouvements de la semaine, tous personnels confondus.
+     * Utilisé pour construire le rapport du responsable.
+     */
+    @Query("SELECT m FROM Mouvement m " +
+            "WHERE m.createdAt BETWEEN :debut AND :fin " +
+            "ORDER BY m.personnel.id, m.createdAt")
+    List<Mouvement> findAllBetween(@Param("debut") LocalDateTime debut,
+                                   @Param("fin") LocalDateTime fin);
+
+    /**
+     * Mouvements de la semaine pour un personnel donné.
+     * Utilisé pour construire le rapport individuel de l'employé.
+     */
+    @Query("SELECT m FROM Mouvement m " +
+            "WHERE m.personnel.id = :idPersonnel " +
+            "AND m.createdAt BETWEEN :debut AND :fin " +
+            "ORDER BY m.createdAt ASC")
+    List<Mouvement> findByPersonnelBetween(@Param("idPersonnel") Integer idPersonnel,
+                                           @Param("debut") LocalDateTime debut,
+                                           @Param("fin") LocalDateTime fin);
+
 }

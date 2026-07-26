@@ -8,6 +8,9 @@
 
 package com.wdyapplications.prime_access.business;
 
+import com.wdyapplications.prime_access.business.reports.ReportBusiness;
+import com.wdyapplications.prime_access.utils.dto.reports.RapportEmployeDTO;
+import com.wdyapplications.prime_access.utils.wdyemail.EmailService;
 import lombok.extern.java.Log;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,8 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +65,8 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 	private PersonnelRepository personnelRepository;
 	@Autowired
 	private FunctionalError functionalError;
+	@Autowired
+	private EmailService emailService;
 	@Autowired
 	private TechnicalError technicalError;
 	@Autowired
@@ -471,7 +478,26 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 		}
 		return response;
 	}
-	//
+	public Response<Map<String, Object>> tryTest(Request<MouvementDto> request, Locale locale) {
+		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
+		try {
+			LocalDate finSemaine = LocalDate.now();                 // dimanche (jour d'exécution)
+			LocalDate debutSemaine = finSemaine.with(DayOfWeek.MONDAY).minusWeeks(0); // lundi de la même semaine
+			// Si l'exécution a lieu le dimanche ET qu'on veut couvrir lundi->samedi précédents :
+			debutSemaine = finSemaine.minusDays(6);
+			LocalDate finPeriode = finSemaine.minusDays(1);
+			List<Personnel> items = personnelRepository.findAll();
+			if (Utilities.isNotEmpty(items)) {
+				for (Personnel personnel : items) {
+					emailService.envoyerRapportResponsable(debutSemaine, finPeriode, personnel.getEmail());
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+	//tryTest
 	public Response<Map<String, Object>> nbPersonnelPresent(Request<MouvementDto> request, Locale locale) {
 		//// System.out.println("----begin nbServiceByStatus-----");
 

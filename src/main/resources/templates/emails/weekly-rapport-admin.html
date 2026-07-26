@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head th:replace="~{email-base :: head}">
+    <meta charset="UTF-8">
+    <title>Rapport hebdomadaire de présence</title>
+</head>
+<body style="margin:0; padding:0; background-color:#0a1418; font-family: Arial, Helvetica, sans-serif;">
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a1418; padding:24px 0;">
+    <tr>
+        <td align="center">
+
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color:#e7f3ec; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+
+                <!-- En-tête -->
+                <tr>
+                    <td style="background-color:#1f2937; padding:24px 32px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>
+                                    <span style="color:#ffffff; font-size:20px; font-weight:bold;"><span th:text="${nomEntreprise}">nomEntreprise</span></span>
+                                </td>
+                                <td align="right">
+                                    <span style="color:#9ca3af; font-size:13px;">Rapport hebdomadaire</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Titre -->
+                <tr>
+                    <td style="padding:32px 32px 8px 32px;">
+                        <h1 style="margin:0; font-size:20px; color:#111827;">Récapitulatif de présence — Semaine du <span th:text="${dateDebut}">!</span> au <span th:text="${dateFin}">!</span></h1>
+                        <p style="margin:8px 0 0 0; font-size:14px; color:#6b7280;">
+                            Bonjour, voici le résumé de l'activité du personnel pour la semaine écoulée.
+                        </p>
+                    </td>
+                </tr>
+
+                <!-- Indicateurs clés -->
+                <tr>
+                    <td style="padding:24px 32px 8px 32px;">
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="33%" style="background-color:#f0fdf4; border-radius:6px; padding:16px; text-align:center;">
+                                    <div style="font-size:22px; font-weight:bold; color:#16a34a;"><span th:text="${rapport.totalPersonnel()}">!</span></div>
+                                    <div style="font-size:12px; color:#166534;">Présents</div>
+                                </td>
+                                <td width="4%"></td>
+                                <td width="33%" style="background-color:#fef2f2; border-radius:6px; padding:16px; text-align:center;">
+                                    <div style="font-size:22px; font-weight:bold; color:#dc2626;"><span th:text="${rapport.absents().size()}">!</span></div>
+                                    <div style="font-size:12px; color:#991b1b;">Absents</div>
+                                </td>
+                                <td width="4%"></td>
+                                <td width="33%" style="background-color:#eff6ff; border-radius:6px; padding:16px; text-align:center;">
+                                    <div style="font-size:22px; font-weight:bold; color:#2563eb;"><span th:text="${rapport.tauxPresence()}">!</span>%</div>
+                                    <div style="font-size:12px; color:#1e40af;">Taux de présence</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Détail par jour -->
+                <tr>
+                    <td style="padding:24px 32px 8px 32px;">
+                        <h2 style="font-size:14px; color:#111827; margin:0 0 12px 0; text-transform:uppercase; letter-spacing:0.5px;">Détail par jour</h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; font-size:13px;">
+                            <tr th:each="entree : ${rapport.statsParJour}">
+                                <td th:text="${#temporals.format(entree.value.date, 'EEEE')}">Lundi</td>
+                                <td align="center" th:text="${entree.value.nbPresents}">40</td>
+                                <td align="center" th:text="${entree.value.nbAbsents}">2</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Liste des absents -->
+                <tr>
+                    <td style="padding:24px 32px 8px 32px;">
+                        <h2 style="font-size:14px; color:#111827; margin:0 0 12px 0; text-transform:uppercase; letter-spacing:0.5px;">Personnel absent (cumul semaine)</h2>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; font-size:13px;">
+                            <!--
+                              Bloc à répéter dynamiquement pour chaque personne absente
+                              (ex: via th:each en Thymeleaf)
+                            -->
+                            <tr th:each="absent : ${rapport.absents}">
+                                <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6; color:#111827;" th:text="${absent.nomComplet}">Jean Kouassi</td>
+                                <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6; color:#6b7280;" align="right" th:text="${absent.nbJoursAbsence} + ' jour(s)'">2 jour(s)</td>
+                            </tr>
+                            <!-- fin du bloc répétable -->
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Bouton d'action -->
+                <tr>
+                    <td style="padding:24px 32px 32px 32px;" align="center">
+                        <a href="[[LIEN_RAPPORT_COMPLET]]"
+                           style="display:inline-block; background-color:#2563eb; color:#ffffff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:14px; font-weight:bold;">
+                            Voir le rapport détaillé
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Pied de page -->
+                <tr>
+                    <td style="background-color:#f9fafb; padding:20px 32px; border-top:1px solid #e5e7eb;">
+                        <p style="margin:0; font-size:12px; color:#9ca3af; text-align:center;">
+                            Ce mail est généré automatiquement chaque dimanche par le système de gestion RH de Prime Access.<br>
+                            Pour toute question, contactez Dorgelès 😎.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
