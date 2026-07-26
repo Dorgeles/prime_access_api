@@ -38,6 +38,6 @@ import com.wdyapplications.prime_access.dao.repository.base._PersonnelRepository
 @Repository
 public interface PersonnelRepository extends JpaRepository<Personnel, Integer>, _PersonnelRepository {
     @Query("SELECT DISTINCT m.personnel FROM Mouvement m " +
-            "WHERE FUNCTION('DATE', m.createdAt) = CURRENT_DATE and m.typeMouvement = 'Entrée' and m.personnel2 is not null")
+            "WHERE FUNCTION('DATE', m.createdAt) = CURRENT_DATE and m.typeMouvement = 'Entrée' and m.personnel2 is not null and m.personnel.isDeleted = false")
     List<Personnel> findPersonnelPresentToDay();
 }

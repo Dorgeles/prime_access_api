@@ -313,7 +313,7 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
     public Response<PersonnelDto> findPersonnelAbsentToDay(Request<PersonnelDto> request, Locale locale) throws ParseException {
         Response<PersonnelDto> response = new Response<PersonnelDto>();
         List<Personnel> items = new ArrayList<Personnel>();
-        List<Personnel> allpersonnels = personnelRepository.findAll();
+        List<Personnel> allpersonnels = personnelRepository.findByIsDeleted(false);
         items = personnelRepository.findPersonnelPresentToDay();
         if (Utilities.isEmpty(items)) {
             response.setStatus(functionalError.DATA_EMPTY("personnel", locale));
