@@ -489,7 +489,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			List<Personnel> items = personnelRepository.findAll();
 			if (Utilities.isNotEmpty(items)) {
 				for (Personnel personnel : items) {
-					emailService.envoyerRapportResponsable(debutSemaine, finPeriode, personnel.getEmail());
+					emailService.envoyerRapportsEmployes(debutSemaine, finPeriode);
 				}
 			}
 		} catch (Exception e) {
