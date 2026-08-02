@@ -484,7 +484,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			LocalDate finSemaine = LocalDate.now();                 // dimanche (jour d'exécution)
 			LocalDate debutSemaine = finSemaine.with(DayOfWeek.MONDAY).minusWeeks(0); // lundi de la même semaine
 			// Si l'exécution a lieu le dimanche ET qu'on veut couvrir lundi->samedi précédents :
-			debutSemaine = finSemaine.minusDays(6);
+			debutSemaine = finSemaine.minusDays(5);
 			LocalDate finPeriode = finSemaine.minusDays(1);
 			List<Personnel> items = personnelRepository.findAll();
 			if (Utilities.isNotEmpty(items)) {
