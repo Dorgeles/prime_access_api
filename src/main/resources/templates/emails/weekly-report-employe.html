@@ -82,11 +82,6 @@
                   <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6;" align="center"><span th:style="'color:' + (${rapport.details().get(4).present()} ? '#16a34a' : '#dc2626') + ';'">●</span></td>
                   <td style="padding:8px 12px; border-bottom:1px solid #f3f4f6; color:#6b7280;" align="right"><span th:text="${rapport.details().get(4).heureArrivee()}">!</span></td>
                 </tr>
-                <tr>
-                  <td style="padding:8px 12px; color:#111827;">Samedi</td>
-                  <td style="padding:8px 12px;" align="center"><span th:style="'color:' + (${rapport.details().get(5).present()} ? '#16a34a' : '#dc2626') + ';'">●</span></td>
-                  <td style="padding:8px 12px; color:#6b7280;" align="right"><span th:text="${rapport.details().get(5).heureArrivee()}">!</span></td>
-                </tr>
               </table>
               <p style="margin:12px 0 0 0; font-size:11px; color:#9ca3af;">
                 Statut : <span style="color:#16a34a;">●</span> Présent &nbsp;&nbsp; <span style="color:#dc2626;">●</span> Absent
