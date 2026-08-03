@@ -63,11 +63,20 @@ public class Utilities {
 	public static Date getCurrentDate() {
 		return new Date();
 	}
-
+	public static boolean blank(String str) {
+		return !notBlank(str);
+	}
+	public static final List<String> URI_CHECK_THROUGH = Arrays.asList(
+			"/mouvement/create"
+	);
 	public static boolean areEquals(Object obj1, Object obj2) {
 		return (Objects.equals(obj1, obj2));
 	}
 
+	public static boolean containsAnyPath(List<String> paths, String fullPath) {
+		return paths.stream()
+				.anyMatch(path -> fullPath.contains(path));
+	}
 	public static <T extends Comparable<T>, Object> boolean areEquals(T obj1, T obj2) {
 		return (obj1 == null ? obj2 == null : obj1.equals(obj2));
 	}
@@ -99,6 +108,22 @@ public class Utilities {
 			}
 		}
 		return request.getRemoteAddr();
+	}
+	public static String normalizeName(String fileName) {
+		if (fileName == null) {
+			throw new NullPointerException("fileName");
+		}
+		String fileNormalize = null;
+		fileNormalize = fileName.trim().replaceAll("\\s+", "_");
+		fileNormalize = fileNormalize.replace("'", "");
+		fileNormalize = fileNormalize.replace("`", "");
+		fileNormalize = fileNormalize.replace("-", "_");
+		fileNormalize = fileNormalize.replace("/", "_");
+		fileNormalize = Normalizer.normalize(fileNormalize, Normalizer.Form.NFD);
+		fileNormalize = fileNormalize.replaceAll("[^\\p{ASCII}]", "");
+		fileNormalize = fileNormalize.replaceAll("[^-a-zA-Z0-9_\\-\\.]", "");
+
+		return fileNormalize.toLowerCase();
 	}
 	// a méthod that generate random int according to lenght
 	public static String generateRandomPassword(int length) {

@@ -10,6 +10,7 @@ package com.wdyapplications.prime_access.business;
 
 import com.wdyapplications.prime_access.business.reports.ReportBusiness;
 import com.wdyapplications.prime_access.utils.dto.reports.RapportEmployeDTO;
+import com.wdyapplications.prime_access.utils.redis.CacheUtils;
 import com.wdyapplications.prime_access.utils.wdyemail.EmailService;
 import lombok.extern.java.Log;
 
@@ -62,6 +63,8 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 	@Autowired
 	private SalleRepository salleRepository;
 	@Autowired
+	private CacheUtils cacheUtils;
+	@Autowired
 	private PersonnelRepository personnelRepository;
 	@Autowired
 	private FunctionalError functionalError;
@@ -108,7 +111,16 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 				response.setHasError(true);
 				return response;
 			}
+			Object CatchData = cacheUtils.getValue("mouvement_personnel_" +dto.getPersonnelId());
 
+			if (CatchData != null) {
+				Status status = new Status();
+				status.setCode("890");
+				status.setMessage("Demande déjà en cours de traitement. Veuillez patienter quelques instants avant de réessayer.");
+				response.setStatus(status);
+				response.setHasError(false);
+				return response;
+			}
 			// Verify if personnel2 exist
 			Personnel existingPersonnel2 = null;
 			if (dto.getPersonnelId() != null && dto.getPersonnelId() > 0){
@@ -119,6 +131,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 					return response;
 				}
 			}
+
             if(existingPersonnel2 != null && existingPersonnel2.getStatusId() == StatusEnum.EN_COURS) {
 				Status status = new Status();
 				status.setMessage("Votre compte est en cours d'activation. Merci de bien vouloir contacter votre responsable.");
@@ -159,6 +172,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 			}
 			entityToSave.setTypeMouvement(determinerTypeMouvement(entityToSave.getPersonnel().getId(), mouvementRepository));
 			items.add(entityToSave);
+			cacheUtils.cacheData( "mouvement_personnel_" +existingPersonnel2.getId(), "en_cours", 1);
 		}
 
 		if (!items.isEmpty()) {
@@ -189,6 +203,7 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 						.collect(Collectors.joining(", "));
 				throw new RuntimeException(errorMessage);
 			}
+
 			response.setStatus(functionalError.SUCCESS("mouvement", locale));
 			response.setItems(itemsDto);
 			response.setHasError(false);
