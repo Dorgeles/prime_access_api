@@ -253,7 +253,7 @@ public class PersonnelBusiness implements IBasicBusiness<Request<PersonnelDto>, 
                     }
                 }
                 listUrl.deleteCharAt(listUrl.length() - 1);
-                dto.setImageUrl(listUrl.toString());
+                entityToSave.setImageUrl(listUrl.toString());
             }
             if (Utilities.notBlank(dto.getContractant())) {
                 entityToSave.setContractant(dto.getContractant());
