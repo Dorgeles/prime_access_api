@@ -25,7 +25,7 @@ public class CronTableJobs {
         LocalDate debutSemaine = finSemaine.with(DayOfWeek.MONDAY).minusWeeks(0); // lundi de la même semaine
         // Si l'exécution a lieu le dimanche ET qu'on veut couvrir lundi->samedi précédents :
         debutSemaine = finSemaine.minusDays(6);
-        LocalDate finPeriode = finSemaine.minusDays(1); // samedi
+        LocalDate finPeriode = finSemaine.minusDays(2); // vendredi
 
         log.info("Génération des rapports de présence du {} au {}", debutSemaine, finPeriode);
 

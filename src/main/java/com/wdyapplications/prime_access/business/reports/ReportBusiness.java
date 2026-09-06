@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.DayOfWeek;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +27,8 @@ public class ReportBusiness {
 
     public RapportResponsableDTO genererRapportResponsable(LocalDate debutSemaine, LocalDate finSemaine) {
         LocalDateTime debut = debutSemaine.atStartOfDay();
-        LocalDateTime fin = finSemaine.atTime(LocalTime.MAX);
+        LocalDate finRapport = ajusterAuVendredi(finSemaine);
+        LocalDateTime fin = finRapport.plusDays(1).atStartOfDay();
 
         List<Personnel> tousPersonnel = personnelRepository.findAll();
         List<Mouvement> mouvementsSemaine = mouvementRepository.findAllBetween(debut, fin);
@@ -38,12 +40,15 @@ public class ReportBusiness {
                         Collectors.groupingBy(m -> toLocalDate(m.getCreatedAt()))
                 ));
 
-        int nbJoursSemaine = (int) ChronoUnit.DAYS.between(debutSemaine, finSemaine) + 1;
+        int nbJoursSemaine = (int) ChronoUnit.DAYS.between(debutSemaine, finRapport) + 1;
 
         Map<java.time.DayOfWeek, StatistiqueJourDTO> statsParJour = new LinkedHashMap<>();
         int totalPresencesSemaine = 0;
 
-        for (LocalDate jour = debutSemaine; !jour.isAfter(finSemaine); jour = jour.plusDays(1)) {
+        for (LocalDate jour = debutSemaine; !jour.isAfter(finRapport); jour = jour.plusDays(1)) {
+            if (jour.getDayOfWeek() == DayOfWeek.SATURDAY || jour.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
             LocalDate jourCourant = jour;
             long nbPresents = tousPersonnel.stream()
                     .filter(p -> mouvementsParPersonnelEtJour
@@ -76,7 +81,7 @@ public class ReportBusiness {
 
         return new RapportResponsableDTO(
                 debutSemaine,
-                finSemaine,
+                finRapport,
                 tousPersonnel.size(),
                 statsParJour,
                 tauxPresence,
@@ -87,9 +92,20 @@ public class ReportBusiness {
     private int compterJoursPresents(LocalDate debut, LocalDate fin, Map<LocalDate, List<Mouvement>> joursPresents) {
         int count = 0;
         for (LocalDate jour = debut; !jour.isAfter(fin); jour = jour.plusDays(1)) {
+            if (jour.getDayOfWeek() == DayOfWeek.SATURDAY || jour.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
             if (joursPresents.containsKey(jour)) count++;
         }
         return count;
+    }
+
+    private LocalDate ajusterAuVendredi(LocalDate date) {
+        return switch (date.getDayOfWeek()) {
+            case SATURDAY -> date.minusDays(1);
+            case SUNDAY -> date.minusDays(2);
+            default -> date;
+        };
     }
 
     // ------------------------------------------------------------------
