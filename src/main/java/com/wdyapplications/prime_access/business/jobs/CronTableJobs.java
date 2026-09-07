@@ -30,6 +30,7 @@ public class CronTableJobs {
         log.info("Génération des rapports de présence du {} au {}", debutSemaine, finPeriode);
 
         emailService.envoyerRapportResponsable(debutSemaine, finPeriode, "zana.soro@orange.com");
+        emailService.envoyerRapportResponsable(debutSemaine, finPeriode, "geovani.anoman@orange.com");
         emailService.envoyerRapportsEmployes(debutSemaine, finPeriode);
     }
 

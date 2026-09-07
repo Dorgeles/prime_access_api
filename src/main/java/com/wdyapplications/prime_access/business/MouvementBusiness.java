@@ -496,17 +496,12 @@ public class MouvementBusiness implements IBasicBusiness<Request<MouvementDto>, 
 	public Response<Map<String, Object>> tryTest(Request<MouvementDto> request, Locale locale) {
 		Response<Map<String, Object>> response = new Response<Map<String, Object>>();
 		try {
-			LocalDate finSemaine = LocalDate.now();                 // dimanche (jour d'exécution)
+			LocalDate finSemaine = LocalDate.now().minusDays(1);                 // dimanche (jour d'exécution)
 			LocalDate debutSemaine = finSemaine.with(DayOfWeek.MONDAY).minusWeeks(0); // lundi de la même semaine
 			// Si l'exécution a lieu le dimanche ET qu'on veut couvrir lundi->samedi précédents :
-			debutSemaine = finSemaine.minusDays(5);
-			LocalDate finPeriode = finSemaine.minusDays(1);
-			List<Personnel> items = personnelRepository.findAll();
-			if (Utilities.isNotEmpty(items)) {
-				for (Personnel personnel : items) {
-					emailService.envoyerRapportsEmployes(debutSemaine, finPeriode);
-				}
-			}
+			debutSemaine = finSemaine.minusDays(6);
+			LocalDate finPeriode = finSemaine.minusDays(2); // vendredi
+			emailService.envoyerRapportResponsable(debutSemaine, finPeriode, "geovani.anoman@orange.com");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
