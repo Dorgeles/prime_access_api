@@ -20,9 +20,9 @@ public class EmailConfig {
 
     public EmailConfig() {
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.wdyapplications.com");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.host", "smtp.resend.com");
+        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.auth", "resend");
 
         this.session = Session.getInstance(props, new Authenticator() {
             @Override
